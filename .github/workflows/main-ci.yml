@@ -1,0 +1,32 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install flake8
+
+    - name: Python Formatting Check
+      run: flake8 .
+
+    - name: Deploy to Production
+      run: |
+        echo "Deploying to production environment"
+        # Add production deployment command here
