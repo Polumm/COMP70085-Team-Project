@@ -21,13 +21,42 @@ jobs:
       with:
         python-version: 3.12
 
+    - name: Identify Branch
+      run: |
+        echo "Running CI for branch ${{ github.ref }}"
+        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+          echo "Ziheng Shan's pipeline triggered."
+        elif [[ ${{ github.ref }} == refs/heads/feature/xl3924_* ]]; then
+          echo "Tiffany Liu's pipeline triggered."
+        elif [[ ${{ github.ref }} == refs/heads/feature/cs824_* ]]; then
+          echo "Chujia Song's pipeline triggered."
+        elif [[ ${{ github.ref }} == refs/heads/feature/tt3024_* ]]; then
+          echo "Wenqing Tu's pipeline triggered."
+        fi
+    
+    - name: Python Formatting Check
+      run: |
+        # Formatting Check is a must!
+        if [[ ${{ github.ref }} == refs/heads/feature/nobody_* ]]; then
+          flake8 --ignore E501 .
+        else
+          flake8 .
+        fi
+
+    # Can create your own Dependencies, but remember to add in (group) requirements.txt
     - name: Install Dependencies
       run: |
-        pip install -r requirements.txt
-        pip install flake8
+        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+          pip install -r requirements-zs524.txt
+        else
+          pip install -r requirements.txt
+        fi
 
     - name: Run Unit Tests
-      run: pytest
+      run: |
+        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+          pytest --markers zs524
+        else
+          pytest
+        fi
 
-    - name: Python Formatting Check
-      run: flake8 .

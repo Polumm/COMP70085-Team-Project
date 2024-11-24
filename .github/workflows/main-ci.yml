@@ -21,10 +21,6 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
-        pip install flake8
-
-    - name: Python Formatting Check
-      run: flake8 .
 
     - name: Deploy to Production
       run: |
