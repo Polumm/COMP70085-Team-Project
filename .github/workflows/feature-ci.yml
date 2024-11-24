@@ -33,7 +33,17 @@ jobs:
         elif [[ ${{ github.ref }} == refs/heads/feature/tt3024_* ]]; then
           echo "Wenqing Tu's pipeline triggered."
         fi
-    
+
+    # Can create your own Dependencies, but remember to add in (group) requirements.txt
+    - name: Install Dependencies
+      run: |
+        pip install flake8
+        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+          pip install -r requirements-zs524.txt
+        else
+          pip install -r requirements.txt
+        fi
+
     - name: Python Formatting Check
       run: |
         # Formatting Check is a must!
@@ -41,15 +51,6 @@ jobs:
           flake8 --ignore E501 .
         else
           flake8 .
-        fi
-
-    # Can create your own Dependencies, but remember to add in (group) requirements.txt
-    - name: Install Dependencies
-      run: |
-        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
-          pip install -r requirements-zs524.txt
-        else
-          pip install -r requirements.txt
         fi
 
     - name: Run Unit Tests
