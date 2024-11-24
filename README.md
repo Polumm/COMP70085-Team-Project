@@ -17,3 +17,34 @@ A team project for COMP70085 Software Systems Engineering.
 | **Clean, Modular Code**     | Adheres to PEP8 standards, with a modular structure using Flask Blueprints for separation of concerns. |
 
 ---
+
+## **How We Worked as a Team**
+
+Our collaboration relied on a structured workflow with **Branch-Specific CI/CD Pipelines** to ensure smooth teamwork and maintain code quality across shared codebases. Each branch served a specific purpose in the development lifecycle, supported by tailored CI/CD workflows:
+
+- **Feature Branches**: Each team member (e.g., Ziheng Shan, Tiffany Liu, Wenqing Tu, Chujia Song) worked independently on feature branches named `feature/<username>_<feature_description>`. 
+- **Develop Branch**: Used for integration testing and deploying to a preview environment after merging feature branches.
+- **Main Branch**: Reserved for stable, production-ready code with automated deployment to production.
+
+This structure allowed us to isolate individual contributions, ensure compatibility during integration, and confidently deploy stable updates.
+
+---
+
+## **Branch-Specific CI/CD**
+
+### **Design Principles**
+
+1. **Branch-Specific Workflows**:
+   - **Feature Branch Workflow (`feature-ci.yml`)**:
+     - Validates individual contributions with unit tests (`pytest`) and code formatting checks (`flake8`).
+     - Supports member-specific configurations for dependencies and test markers.
+   - **Develop Branch Workflow (`develop-ci.yml`)**:
+     - Ensures integrated features pass all tests and are deployed to a preview environment for team review.
+   - **Main Branch Workflow (`main-ci.yml`)**:
+     - Automates deployment of production-ready code after thorough testing.
+
+2. **Automation**:
+   - Repetitive tasks like testing, formatting, and deployment are fully automated to reduce errors and save time.
+
+3. **Modularity**:
+   - Separate workflows ensure independent CI/CD pipelines for different branches, preventing interference between development stages.
