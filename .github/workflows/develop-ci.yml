@@ -26,11 +26,10 @@ jobs:
     - name: Run Unit Tests
       run: pytest
 
-    # Has done Python Formatting Check in feature-ci
-    # - name: Python Formatting Check
-    #   run: flake8 .
-
-    - name: Deploy to Preview
+    - name: Deploy to Impaas
+      env:
+        TSURU_TOKEN: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
       run: |
         echo "Deploying to preview environment"
-        # Add deployment command here
+        tsuru target add impaas https://impaas.uk -s
+        tsuru app deploy -a cs824-sse-app .

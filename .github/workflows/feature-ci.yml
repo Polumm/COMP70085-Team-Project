@@ -34,7 +34,7 @@ jobs:
           echo "Wenqing Tu's pipeline triggered."
         fi
 
-    # Can create your own Dependencies, but remember to add in (group) requirements.txt
+    # Can create your own Dependencies, but remember to also add them in requirements.txt
     - name: Install Dependencies
       run: |
         pip install flake8
@@ -44,13 +44,10 @@ jobs:
           pip install -r requirements.txt
         fi
 
+    # Formatting Check is a must!
     - name: Python Formatting Check
       run: |
-        # Formatting Check is a must!
-        if [[ ${{ github.ref }} == refs/heads/feature/nobody_* ]]; then
-          flake8 --ignore E501 .
-        else
-          flake8 .
+        flake8 *.py
         fi
 
     - name: Run Unit Tests
@@ -60,4 +57,3 @@ jobs:
         else
           pytest
         fi
-

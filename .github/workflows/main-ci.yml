@@ -22,7 +22,10 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: Deploy to Production
+    - name: Deploy to Impaas
+      env:
+        TSURU_TOKEN: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
       run: |
         echo "Deploying to production environment"
-        # Add production deployment command here
+        tsuru target add impaas https://impaas.uk -s
+        tsuru app deploy -a cs824-sse-app .
