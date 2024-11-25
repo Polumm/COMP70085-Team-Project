@@ -1,8 +1,23 @@
 from flask import Blueprint, jsonify, request
 from app.models import db, CardLayout, PlayerScore
 import random
+from datetime import datetime, timezone
 
 api = Blueprint("api", __name__)
+
+
+@api.route("/leaderboard", methods=["GET"])
+def leaderboard():
+    """
+    Retrieve the leaderboard
+    - Returns the top 10 players sorted by completion time
+    """
+    scores = (
+        PlayerScore.query.order_by(PlayerScore.completion_time.asc())
+        .limit(10)
+        .all()
+    )
+    return jsonify([score.to_dict() for score in scores])
 
 
 @api.route("/create_game", methods=["POST"])
@@ -17,11 +32,11 @@ def create_game():
     random.shuffle(cards)
 
     # Save the layout in the database
-    new_layout = CardLayout(layout=cards)
-    db.session.add(new_layout)
+    layout = CardLayout(layout=cards, created_at=datetime.now(timezone.utc))
+    db.session.add(layout)
     db.session.commit()
 
-    return jsonify(new_layout.to_dict()), 201
+    return jsonify(layout.to_dict()), 201
 
 
 @api.route("/submit_score", methods=["POST"])
@@ -40,24 +55,13 @@ def submit_score():
         return jsonify({"error": "Invalid data"}), 400
 
     # Create a new player score entry
-    new_score = PlayerScore(
-        player_name=player_name, completion_time=completion_time, moves=moves
+    score = PlayerScore(
+        player_name=player_name,
+        completion_time=completion_time,
+        moves=moves,
+        created_at=datetime.now(timezone.utc),
     )
-    db.session.add(new_score)
+    db.session.add(score)
     db.session.commit()
 
-    return jsonify(new_score.to_dict()), 201
-
-
-@api.route("/leaderboard", methods=["GET"])
-def leaderboard():
-    """
-    Retrieve the leaderboard
-    - Returns the top 10 players sorted by completion time
-    """
-    scores = (
-        PlayerScore.query.order_by(PlayerScore.completion_time.asc())
-        .limit(10)
-        .all()
-    )
-    return jsonify([score.to_dict() for score in scores])
+    return jsonify(score.to_dict()), 201

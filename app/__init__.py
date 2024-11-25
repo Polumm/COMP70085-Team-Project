@@ -5,9 +5,8 @@ from flask_migrate import Migrate
 from adbc_driver_postgresql.dbapi import connect
 import random
 import json  # For converting Python objects to JSON
-from datetime import datetime
+from datetime import datetime, timezone
 import configparser
-
 
 # Initialize Flask extensions
 db = SQLAlchemy()
@@ -84,7 +83,7 @@ def create_app(generate_game=False):
             layout_json = json.dumps(layout)  # Convert layout to JSON format
             target_cur.execute(
                 sql_queries["insert_queries"]["insert_card_layout"],
-                (layout_json, datetime.utcnow()),
+                (layout_json, datetime.now(timezone.utc)),
             )
 
         # Commit changes to the database
@@ -99,5 +98,10 @@ def create_app(generate_game=False):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Import and register API routes
+    from app.routes import api
+
+    app.register_blueprint(api, url_prefix="/")
 
     return app
