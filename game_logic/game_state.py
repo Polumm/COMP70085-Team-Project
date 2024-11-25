@@ -1,7 +1,10 @@
 from collections.abc import MutableSequence
 from typing import Optional
-from game_logic.card import Card
 from random import shuffle
+import json
+
+from game_logic.card import Card
+from game_logic.json_encoder import GameEncoder
 
 
 class Game:
@@ -55,6 +58,9 @@ class Game:
 
     def __str__(self) -> str:
         return str([str(card) for card in self._cards])
+
+    def get_json_str(self) -> str:
+        return json.dumps(self, indent=4, cls=GameEncoder)
 
     # This method is only for testing purposes
     def force_reveal(self, target: int):

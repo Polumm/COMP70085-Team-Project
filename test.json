@@ -1,0 +1,46 @@
+{
+    "_board_size": 10,
+    "_cards": [
+        {
+            "_revealed": false,
+            "_secret_index": 1
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 4
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 2
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 3
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 0
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 3
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 4
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 1
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 0
+        },
+        {
+            "_revealed": false,
+            "_secret_index": 2
+        }
+    ],
+    "_revealed_card_index": null
+}
