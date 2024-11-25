@@ -8,6 +8,10 @@ on:
       - feature/cs824_*
       - feature/tt3024_*
 
+env:
+  TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+  FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
+
 jobs:
   python-formatting:
     runs-on: ubuntu-latest
@@ -69,6 +73,9 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
@@ -85,9 +92,15 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
       - name: Run Unit Tests
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pytest

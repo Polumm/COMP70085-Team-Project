@@ -1,26 +1,16 @@
-import configparser
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from adbc_driver_postgresql.dbapi import connect
 import random
 import json  # For converting Python objects to JSON
-from datetime import datetime
+from datetime import datetime, timezone
+import configparser
 
 # Initialize Flask extensions
 db = SQLAlchemy()
 migrate = Migrate()
-
-
-def load_config(config_file):
-    """
-    Load configuration from a specified `.ini` file.
-    :param config_file: Path to the configuration file.
-    :return: ConfigParser object with loaded configurations.
-    """
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    return config
 
 
 def init_db_connection(db_url):
@@ -45,54 +35,73 @@ def generate_card_layout(num_pairs=8):
     return cards
 
 
-def create_app():
+def load_sql_queries(config_file):
+    """
+    Load SQL queries from an `.ini` file.
+    :param config_file: Path to the SQL queries file.
+    :return: ConfigParser object with loaded SQL queries.
+    """
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    return config
+
+
+def create_app(generate_game=False):
     """
     Flask application factory pattern for creating app instances.
+    :param generate_game: Whether to generate new card layouts.
     :return: Configured Flask app instance.
     """
     app = Flask(__name__)
 
-    # Load configurations
-    secret_config = load_config(
-        "app/secret.ini"
-    )  # Secrets for target database
-    sql_config = load_config(
-        "app/sql_queries.ini"
-    )  # SQL queries for target databases
+    # Load sensitive configurations from environment variables
+    target_db_url = os.getenv("TARGET_DB_URL")  # Database URL for PostgreSQL
+    flask_db_url = os.getenv(
+        "FLASK_DB_URL"
+    )  # SQLAlchemy database URL for Flask
 
-    # PostgreSQL connection URLs
-    target_db_url = secret_config["database"]["db_url"]
+    if not target_db_url or not flask_db_url:
+        raise RuntimeError(
+            "Missing required environment variables: "
+            "TARGET_DB_URL and FLASK_DB_URL"
+        )
+
+    # Load SQL queries from the configuration file
+    sql_queries = load_sql_queries("app/sql_queries.ini")
 
     # Initialize target database connections
     target_conn, target_cur = init_db_connection(target_db_url)
 
-    # Create target tables
-    target_cur.execute(sql_config["table_creation"]["create_card_layouts"])
-    target_cur.execute(sql_config["table_creation"]["create_player_scores"])
+    # Create tables in the target database
+    target_cur.execute(sql_queries["table_creation"]["create_card_layouts"])
+    target_cur.execute(sql_queries["table_creation"]["create_player_scores"])
 
-    # Generate and save card layouts
-    for _ in range(5):  # Generate 5 example layouts
-        layout = generate_card_layout()
-        layout_json = json.dumps(layout)  # Convert layout to JSON format
-        target_cur.execute(
-            """
-            INSERT INTO card_layouts (layout, created_at)
-            VALUES ($1::jsonb, $2)
-            """,
-            (layout_json, datetime.utcnow()),
-        )
+    # Optionally generate and save card layouts
+    if generate_game:
+        for _ in range(5):  # Generate 5 example layouts
+            layout = generate_card_layout()
+            layout_json = json.dumps(layout)  # Convert layout to JSON format
+            target_cur.execute(
+                sql_queries["insert_queries"]["insert_card_layout"],
+                (layout_json, datetime.now(timezone.utc)),
+            )
 
-    # Commit changes to the database
-    target_conn.commit()
+        # Commit changes to the database
+        target_conn.commit()
 
     # Close database connections
     target_cur.close()
     target_conn.close()
 
     # Flask SQLAlchemy and Migrate configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = secret_config["flask"]["db_url"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = flask_db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Import and register API routes
+    from app.routes import api
+
+    app.register_blueprint(api, url_prefix="/")
 
     return app
