@@ -9,51 +9,85 @@ on:
       - feature/tt3024_*
 
 jobs:
-  feature-test:
+  python-formatting:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
 
-    - name: Identify Branch
-      run: |
-        echo "Running CI for branch ${{ github.ref }}"
-        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
-          echo "Ziheng Shan's pipeline triggered."
-        elif [[ ${{ github.ref }} == refs/heads/feature/xl3924_* ]]; then
-          echo "Tiffany Liu's pipeline triggered."
-        elif [[ ${{ github.ref }} == refs/heads/feature/cs824_* ]]; then
-          echo "Chujia Song's pipeline triggered."
-        elif [[ ${{ github.ref }} == refs/heads/feature/tt3024_* ]]; then
-          echo "Wenqing Tu's pipeline triggered."
-        fi
+      - name: Install flake8
+        run: pip install flake8
 
-    # Can create your own Dependencies, but remember to also add them in requirements.txt
-    - name: Install Dependencies
-      run: |
-        pip install flake8
-        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
-          pip install -r requirements-zs524.txt
-        else
+      - name: Run flake8
+        run: flake8 .
+
+  branch-detection:
+    needs: python-formatting
+    runs-on: ubuntu-latest
+    outputs:
+      detected-branch: ${{ steps.detect-branch.outputs.branch-name }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Identify Branch
+        id: detect-branch
+        run: |
+          echo "Running CI for branch ${{ github.ref }}"
+          if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+            echo "Detected branch: Ziheng Shan"
+            echo "::set-output name=branch-name::Ziheng Shan"
+          elif [[ ${{ github.ref }} == refs/heads/feature/xl3924_* ]]; then
+            echo "Detected branch: Tiffany Liu"
+            echo "::set-output name=branch-name::Tiffany Liu"
+          elif [[ ${{ github.ref }} == refs/heads/feature/cs824_* ]]; then
+            echo "Detected branch: Chujia Song"
+            echo "::set-output name=branch-name::Chujia Song"
+          elif [[ ${{ github.ref }} == refs/heads/feature/tt3024_* ]]; then
+            echo "Detected branch: Wenqing Tu"
+            echo "::set-output name=branch-name::Wenqing Tu"
+          else
+            echo "Unknown branch"
+            exit 1
+          fi
+
+  setup:
+    needs: branch-detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
           pip install -r requirements.txt
-        fi
 
-    # Formatting Check is a must!
-    - name: Python Formatting Check
-      run: |
-        flake8 *.py
-        fi
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Run Unit Tests
-      run: |
-        if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
-          pytest --markers zs524
-        else
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Unit Tests
+        run: |
           pytest
-        fi
