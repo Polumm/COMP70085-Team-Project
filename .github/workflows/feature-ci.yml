@@ -27,6 +27,7 @@ jobs:
         run: flake8 .
 
   branch-detection:
+    needs: python-formatting
     runs-on: ubuntu-latest
     outputs:
       detected-branch: ${{ steps.detect-branch.outputs.branch-name }}
@@ -72,7 +73,7 @@ jobs:
           pip install -r requirements.txt
 
   test:
-    needs: [python-formatting, setup]
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
