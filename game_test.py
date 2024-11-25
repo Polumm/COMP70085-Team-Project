@@ -41,4 +41,6 @@ class TestGame(unittest.TestCase):
         ]
         answer_game = Game(10)
         answer_game.set_board(answer_board)
+        print(test_game)
+        print(answer_game)
         assert str(test_game) == str(answer_game)
