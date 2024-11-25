@@ -70,13 +70,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-<<<<<<< HEAD
           pip install -r requirements.txt
-=======
-          python -m pip install --upgrade pip
-          python -m pip install flake8
-          python -m pip install -r requirements.txt
->>>>>>> 91006cd (Implemented CI/CD job decomposition)
 
   test:
     needs: setup
@@ -85,16 +79,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-<<<<<<< HEAD
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-=======
-      - name: Python Formatting Check
-        run: |
-          python -m flake8 *.py
->>>>>>> 91006cd (Implemented CI/CD job decomposition)
 
       - name: Install Dependencies
         run: |
