@@ -49,7 +49,7 @@ def load_sql_queries(config_file):
 def create_app(generate_game=False):
     """
     Flask application factory pattern for creating app instances.
-    :param generate_game: Whether to generate new card layouts during initialization.
+    :param generate_game: Whether to generate new card layouts.
     :return: Configured Flask app instance.
     """
     app = Flask(__name__)
@@ -62,7 +62,8 @@ def create_app(generate_game=False):
 
     if not target_db_url or not flask_db_url:
         raise RuntimeError(
-            "Missing required environment variables: TARGET_DB_URL and FLASK_DB_URL"
+            "Missing required environment variables: "
+            "TARGET_DB_URL and FLASK_DB_URL"
         )
 
     # Load SQL queries from the configuration file

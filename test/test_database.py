@@ -10,7 +10,8 @@ def app():
     app.config.update(
         {
             "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",  # Use in-memory SQLite for tests
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            # Use in-memory SQLite for tests
         }
     )
 

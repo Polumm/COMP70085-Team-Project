@@ -1,6 +1,5 @@
 import json
 import pytest
-from app.models import db, CardLayout, PlayerScore
 
 
 @pytest.fixture
