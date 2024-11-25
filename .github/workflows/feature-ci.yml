@@ -8,6 +8,10 @@ on:
       - feature/cs824_*
       - feature/tt3024_*
 
+env:
+  TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+  FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
+
 jobs:
   python-formatting:
     runs-on: ubuntu-latest
@@ -69,6 +73,9 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
@@ -85,30 +92,15 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
       - name: Run Unit Tests
+        env:
+          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
+          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pytest
-
-  deploy:
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v4
-
-        - name: Setup Python
-          uses: actions/setup-python@v4
-          with:
-            python-version: 3.12
-
-        - name: Install Dependencies
-          run: |
-            pip install -r requirements.txt
-
-        - name: Deploy to Preview
-          run: |
-            echo "Deploying to preview environment"
-            # Add deployment command here
