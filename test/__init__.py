@@ -8,7 +8,6 @@ import json  # For converting Python objects to JSON
 from datetime import datetime
 import configparser
 
-
 # Initialize Flask extensions
 db = SQLAlchemy()
 migrate = Migrate()
