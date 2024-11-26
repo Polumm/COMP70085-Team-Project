@@ -1,6 +1,10 @@
 # COMP70085-Team-Project
 A team project for COMP70085 Software Systems Engineering.
 
+## Progress Update
+[✔] Implemented database interactions: Added support for storing and retrieving game data, including player scores and card layouts. See app/routes.py for details.
+[✔] Random image retrieval API: Developed an API to fetch unique random images using an external service. See app/routes.py for details.
+
 ## **Project Overview**
 
 | Feature                     | Description                                                                 |

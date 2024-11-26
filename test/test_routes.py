@@ -40,29 +40,6 @@ def client(app):
     return app.test_client()
 
 
-# Test cases
-def test_card_layout_contains_pairs(app):
-    """Test if the card layout contains pairs of each card."""
-    with app.app_context():
-        # Create a test card layout
-        layout_data = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8]
-        layout = CardLayout(layout=layout_data)
-        db.session.add(layout)
-        db.session.commit()
-
-        # Query the layout
-        queried_layout = CardLayout.query.first()
-
-        # Verify the card layout contains pairs
-        card_counts = {}
-        for card in queried_layout.layout:
-            card_counts[card] = card_counts.get(card, 0) + 1
-
-        assert all(
-            count == 2 for count in card_counts.values()
-        ), f"Card layout does not contain pairs: {card_counts}"
-
-
 def test_player_score_model(app):
     """Test PlayerScore model CRUD operations."""
     with app.app_context():
@@ -107,3 +84,43 @@ def test_leaderboard(client):
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, list)
+
+
+def test_get_card_layouts_with_pairs(client, app):
+    """Test if the card layout contains pairs of numbers in sorted order."""
+    with app.app_context():
+        # Query the layout
+        queried_layout = CardLayout.query.first()
+
+        # Sort the layout
+        sorted_layout = sorted(queried_layout.layout)
+
+        # Validate pairs
+        pair_differences_sum = 0
+        for i in range(0, len(sorted_layout), 2):
+            assert (
+                sorted_layout[i] == sorted_layout[i + 1]
+            ), f"Cards {sorted_layout[i]} and {sorted_layout[i + 1]}"
+            " are not a pair"
+            pair_differences_sum += sorted_layout[i + 1] - sorted_layout[i]
+
+        # Assert the sum of all pair differences is 0
+        assert (
+            pair_differences_sum == 0
+        ), f"Pair differences do not sum to 0: {pair_differences_sum}"
+
+
+def test_get_random_images(client):
+    """Test /get_random_images API with real Likepoems API."""
+    # Fetch 5 random images
+    response = client.get("/get_random_images?count=5")
+    assert response.status_code == 200
+
+    data = response.get_json()
+    assert len(data) == 5  # Ensure 5 images are returned
+    assert all("url" in image for image in data)  # Ensure each image has a URL
+
+    # Check that URLs are unique
+    urls = [image["url"] for image in data]
+    print(urls)
+    assert len(set(urls)) == len(urls), "Image URLs are not unique"
