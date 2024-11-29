@@ -10,20 +10,19 @@ from game_logic.json_encoder import GameEncoder
 
 class Game:
     def __init__(
-        self, board_size: int, test_cards: Optional[list[Card]] = None
+        self, num_pairs: int, test_cards: Optional[list[Card]] = None
     ) -> None:
-        self._board_size: int = board_size
-        assert board_size % 2 == 0, "The board size must be an even number!"
+        self._num_pairs: int = num_pairs
 
         if test_cards is None:
             self._cards: MutableSequence[Optional[Card]] = list(
-                [Card(secret_index=i) for i in range(board_size // 2)]
-                + [Card(secret_index=i) for i in range(board_size // 2)]
+                [Card(secret_index=i) for i in range(num_pairs)]
+                + [Card(secret_index=i) for i in range(num_pairs)]
             )  # add a list() to pass type check
 
             shuffle(self._cards)  # make the order of the cards random
         else:
-            assert board_size == len(
+            assert num_pairs == len(
                 test_cards
             ), "The board size doesn't match the board you gave me!"
             self._cards = list(test_cards)
@@ -33,7 +32,7 @@ class Game:
         self._time: float = 0.0
         self._flip_count: int = 0
 
-    def flip(self, target: int) -> Optional[int]:
+    def flip(self, target: int) -> int:
         if self._time == 0:
             self._time = time()
 
@@ -43,11 +42,11 @@ class Game:
 
         # you can't flip a non-existent card
         if target_card is None:
-            return
+            return -1
 
         # you can't flip a revealed card
         if target_card.is_revealed():
-            return
+            return -1
 
         if self._revealed_card_index is not None:
             # currently there is a revealed card
@@ -59,9 +58,6 @@ class Game:
                 revealed_card.flip()
                 self._has_revealed_card = False
                 self._revealed_card_index = None
-                return (
-                    target_card.get_secret_index()
-                )  # return the secret index of the card being flipped
             else:
                 # they do match
                 assert self._revealed_card_index is not None, "Buggy state"
@@ -69,12 +65,14 @@ class Game:
                 # remove both cards
                 self._remove_card(self._revealed_card_index)
                 self._remove_card(target)
-                return
+
+            return target_card.get_secret_index()
         else:
             # a normal flip
             self._has_revealed_card = True
             self._revealed_card_index = target
             target_card.flip()
+
             return target_card.get_secret_index()
 
     def __str__(self) -> str:
@@ -128,3 +126,6 @@ class Game:
         revealed_card = self._cards[self._revealed_card_index]
         assert revealed_card is not None, "Buggy state"
         return revealed_card
+
+
+games: dict[int, Game] = {}
