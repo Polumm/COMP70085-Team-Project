@@ -36,8 +36,8 @@ def leaderboard():
         ), 500
 
 
-@api.route("/create_game", methods=["POST"])
-def create_game():
+@api.route("/create_game/<n>", methods=["POST"])
+def create_game(n: int | str):
     """
     Create a new game card layout
     - Generates a random shuffled card layout (each card appears twice).
@@ -47,6 +47,7 @@ def create_game():
         The created card layout in JSON format.
     """
     try:
+        n = int(n)
         # Generate a shuffled card layout (each card appears twice)
         cards = list(range(1, 9)) * 2
         random.shuffle(cards)
