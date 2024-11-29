@@ -59,7 +59,7 @@ def test_player_score_model(app):
 
 def test_create_game(client):
     """Test the /create_game route."""
-    response = client.post("/create_game")
+    response = client.post("/create_game/10")
     assert response.status_code == 201
     data = response.get_json()
     assert "layout" in data
