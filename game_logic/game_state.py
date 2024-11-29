@@ -2,6 +2,7 @@ from collections.abc import MutableSequence
 from typing import Optional
 from random import shuffle
 import json
+from time import time
 
 from game_logic.card import Card
 from game_logic.json_encoder import GameEncoder
@@ -29,38 +30,64 @@ class Game:
 
         self._revealed_card_index: Optional[int] = None
 
+        self._time: float = 0.0
+        self._flip_count: int = 0
+
     def flip(self, target: int) -> Optional[int]:
+        if self._time == 0:
+            self._time = time()
+
+        self._flip_count += 1
+
         target_card = self._cards[target]
 
+        # you can't flip a non-existent card
         if target_card is None:
             return
 
+        # you can't flip a revealed card
         if target_card.is_revealed():
             return
 
         if self._revealed_card_index is not None:
+            # currently there is a revealed card
             if not self._compare_index(target):
-                self._has_revealed_card = False
+                # if the revealed card doesn't match the card being flipped
                 revealed_card = self._get_revealed_card()
+
+                # flip the revealed card back
                 revealed_card.flip()
+                self._has_revealed_card = False
                 self._revealed_card_index = None
-                return target_card.get_secret_index()
+                return (
+                    target_card.get_secret_index()
+                )  # return the secret index of the card being flipped
             else:
+                # they do match
                 assert self._revealed_card_index is not None, "Buggy state"
+
+                # remove both cards
                 self._remove_card(self._revealed_card_index)
                 self._remove_card(target)
                 return
         else:
+            # a normal flip
             self._has_revealed_card = True
             self._revealed_card_index = target
             target_card.flip()
-            return
+            return target_card.get_secret_index()
 
     def __str__(self) -> str:
         return str([str(card) for card in self._cards])
 
     def get_json_str(self) -> str:
         return json.dumps(self, indent=4, cls=GameEncoder)
+
+    def get_time(self) -> float:
+        return 0.0 if self._time == 0.0 else time() - self._time
+
+    def get_flip_count(self) -> int:
+        return self._flip_count
 
     # This method is only for testing purposes
     def force_reveal(self, target: int):
