@@ -1,9 +1,11 @@
-from flask import Blueprint, jsonify, request
-from app.models import db, CardLayout, PlayerScore
+from flask import Blueprint, jsonify, request, render_template
+import aiohttp
+
 import random
 from datetime import datetime, timezone
-import aiohttp
 import asyncio
+
+from app_logic.models import db, CardLayout, PlayerScore
 
 # Create a Blueprint for API routes
 api = Blueprint("api", __name__)
@@ -214,3 +216,7 @@ def get_random_images():
         return jsonify(images), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@api.route("/")
+def index():
+    return render_template("index.html")

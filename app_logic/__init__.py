@@ -52,7 +52,7 @@ def create_app(generate_game=False):
     :param generate_game: Whether to generate new card layouts.
     :return: Configured Flask app instance.
     """
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=os.path.abspath("templates"))
 
     # Load sensitive configurations from environment variables
     target_db_url = os.getenv("TARGET_DB_URL")  # Database URL for PostgreSQL
@@ -67,7 +67,7 @@ def create_app(generate_game=False):
         )
 
     # Load SQL queries from the configuration file
-    sql_queries = load_sql_queries("app/sql_queries.ini")
+    sql_queries = load_sql_queries("app_logic/sql_queries.ini")
 
     # Initialize target database connections
     target_conn, target_cur = init_db_connection(target_db_url)
@@ -100,7 +100,7 @@ def create_app(generate_game=False):
     migrate.init_app(app, db)
 
     # Import and register API routes
-    from app.routes import api
+    from app_logic.routes import api
 
     app.register_blueprint(api, url_prefix="/")
 
