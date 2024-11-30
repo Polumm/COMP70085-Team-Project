@@ -224,3 +224,34 @@ def index():
     Displays a welcome message.
     """
     return render_template("index.html")
+
+
+@api.route("/example_usage", methods=["GET"])
+def example_usage():
+    """
+    Example of programmatically using the APIs within the Flask app.
+    Calls '/create_game' and '/leaderboard' programmatically.
+    """
+    # Call the /create_game endpoint
+    cards = list(range(1, 9)) * 2
+    random.shuffle(cards)
+    new_layout = CardLayout(
+        layout=cards, created_at=datetime.now(timezone.utc)
+    )
+    db.session.add(new_layout)
+    db.session.commit()
+
+    # Fetch leaderboard data
+    scores = (
+        PlayerScore.query.order_by(PlayerScore.completion_time.asc())
+        .limit(10)
+        .all()
+    )
+
+    return jsonify(
+        {
+            "message": "Example usage of APIs",
+            "new_game": new_layout.to_dict(),
+            "leaderboard": [score.to_dict() for score in scores],
+        }
+    ), 200
