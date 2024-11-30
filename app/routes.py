@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-import random
+
 from datetime import datetime, timezone
 import aiohttp
 import asyncio
