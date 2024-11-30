@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import asyncio
 
 from app_logic.models import db, CardLayout, PlayerScore
+from game_logic.game_state import Game, games
 
 # Create a Blueprint for API routes
 # api = Blueprint("api", __name__)
@@ -38,8 +39,8 @@ def leaderboard():
         ), 500
 
 
-# @api.route("/create_game", methods=["POST"])
-def create_game():
+# @api.route("/create_game/<num_pairs>", methods=["POST"])
+def create_game(num_pairs: int | str):
     """
     Create a new game card layout
     - Generates a random shuffled card layout (each card appears twice).
@@ -49,21 +50,35 @@ def create_game():
         The created card layout in JSON format.
     """
     try:
-        # Generate a shuffled card layout (each card appears twice)
-        cards = list(range(1, 9)) * 2
-        random.shuffle(cards)
+        num_pairs = int(num_pairs)
+        game = Game(num_pairs)
+        i = 1
+        while i in games:
+            i += 1
+        games[i] = game
 
         # Save the layout in the database
-        layout = CardLayout(
-            layout=cards, created_at=datetime.now(timezone.utc)
-        )
+        layout = CardLayout(layout=None, created_at=datetime.now(timezone.utc))
         db.session.add(layout)
         db.session.commit()
 
-        return jsonify(layout.to_dict()), 201
+        return jsonify(i), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
+
+
+# @api.route("/flip/<game_id>/<card_index>", methods=["POST"])
+def flip(game_id: int | str, card_index: int | str):
+    game_id = int(game_id)
+    card_index = int(card_index)
+    try:
+        secret_index = games[game_id].flip(card_index)
+        return jsonify(secret_index), 201
+    except KeyError:
+        return jsonify(
+            {"error": "The number of images must be greater than 0"}
+        ), 400
 
 
 # @api.route("/submit_score", methods=["POST"])
