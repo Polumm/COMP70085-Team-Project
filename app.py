@@ -23,7 +23,7 @@ app.route("/game")(game)
 
 # backend apis
 app.route("/leaderboard", methods=["GET"])(leaderboard)
-app.route("/create_game", methods=["POST"])(create_game)
+app.route("/create_game/<num_pairs>", methods=["POST"])(create_game)
 app.route("/submit_score", methods=["POST"])(submit_score)
 app.route("/get_card_layouts", methods=["GET"])(get_card_layouts)
 app.route("/get_random_images", methods=["GET"])(get_random_images)

@@ -2,10 +2,6 @@ import pytest
 
 import os
 
-import sys
-
-print(sys.path)
-
 from app_logic.database import db
 from app_logic.models import CardLayout, PlayerScore
 from app_logic.init_app import create_app
