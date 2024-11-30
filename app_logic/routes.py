@@ -1,93 +1,21 @@
-from flask import Blueprint, jsonify, request
-
-from datetime import datetime, timezone
+from flask import jsonify, request, render_template
 import aiohttp
+
+import random
+from datetime import datetime, timezone
 import asyncio
 
-from app.models import db, CardLayout, PlayerScore
-from game_logic.game_state import Game, games
+from app_logic.models import db, CardLayout, PlayerScore
 
 # Create a Blueprint for API routes
-api = Blueprint("api", __name__)
+# api = Blueprint("api", __name__)
 
 # ==============================
-# game related APIS
-# ==============================
-
-
-@api.route("/create_game/<num_pairs>", methods=["POST"])
-def create_game(num_pairs: int | str):
-    """
-    Create a new game card layout
-    - Generates a random shuffled card layout (each card appears twice).
-    - Saves the layout into the database.
-
-    Returns:
-        The created card layout in JSON format.
-    """
-    try:
-        num_pairs = int(num_pairs)
-        game = Game(num_pairs)
-        i = 1
-        while i in games:
-            i += 1
-        games[i] = game
-
-        # Save the layout in the database
-        layout = CardLayout(layout=None, created_at=datetime.now(timezone.utc))
-        db.session.add(layout)
-        db.session.commit()
-
-        return jsonify(i), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
-
-
-@api.route("/flip/<game_id>/<card_index>", methods=["POST"])
-def flip(game_id: int | str, card_index: int | str):
-    game_id = int(game_id)
-    card_index = int(card_index)
-    try:
-        secret_index = games[game_id].flip(card_index)
-        return jsonify(secret_index), 201
-    except KeyError:
-        return jsonify(
-            {"error": "The number of images must be greater than 0"}
-        ), 400
-
-
-@api.route("/get_card_layouts", methods=["GET"])
-def get_card_layouts():
-    """
-    Fetch all card layouts from the database
-    - Retrieves all saved card layouts (latest first).
-
-    Returns:
-        JSON list of card layouts, or an error message if the query fails.
-    """
-    try:
-        # Fetch all card layouts
-        layouts = CardLayout.query.order_by(CardLayout.created_at.desc()).all()
-
-        if not layouts:
-            return jsonify({"error": "No card layouts available"}), 404
-
-        # Return the layouts as a list of dictionaries
-        return jsonify([layout.to_dict() for layout in layouts]), 200
-
-    except Exception as e:
-        return jsonify(
-            {"error": f"Failed to fetch card layouts: {str(e)}"}
-        ), 500
-
-
-# ==============================
-# score related APIS
+# API ENDPOINTS
 # ==============================
 
 
-@api.route("/leaderboard", methods=["GET"])
+# @api.route("/leaderboard", methods=["GET"])
 def leaderboard():
     """
     Retrieve the leaderboard
@@ -110,7 +38,35 @@ def leaderboard():
         ), 500
 
 
-@api.route("/submit_score", methods=["POST"])
+# @api.route("/create_game", methods=["POST"])
+def create_game():
+    """
+    Create a new game card layout
+    - Generates a random shuffled card layout (each card appears twice).
+    - Saves the layout into the database.
+
+    Returns:
+        The created card layout in JSON format.
+    """
+    try:
+        # Generate a shuffled card layout (each card appears twice)
+        cards = list(range(1, 9)) * 2
+        random.shuffle(cards)
+
+        # Save the layout in the database
+        layout = CardLayout(
+            layout=cards, created_at=datetime.now(timezone.utc)
+        )
+        db.session.add(layout)
+        db.session.commit()
+
+        return jsonify(layout.to_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
+
+
+# @api.route("/submit_score", methods=["POST"])
 def submit_score():
     """
     Submit a player's score
@@ -163,6 +119,31 @@ def submit_score():
         return jsonify({"error": f"Failed to submit score: {str(e)}"}), 500
 
 
+# @api.route("/get_card_layouts", methods=["GET"])
+def get_card_layouts():
+    """
+    Fetch all card layouts from the database
+    - Retrieves all saved card layouts (latest first).
+
+    Returns:
+        JSON list of card layouts, or an error message if the query fails.
+    """
+    try:
+        # Fetch all card layouts
+        layouts = CardLayout.query.order_by(CardLayout.created_at.desc()).all()
+
+        if not layouts:
+            return jsonify({"error": "No card layouts available"}), 404
+
+        # Return the layouts as a list of dictionaries
+        return jsonify([layout.to_dict() for layout in layouts]), 200
+
+    except Exception as e:
+        return jsonify(
+            {"error": f"Failed to fetch card layouts: {str(e)}"}
+        ), 500
+
+
 # ==============================
 # FETCH RANDOM IMAGES FROM EXTERNAL API
 # ==============================
@@ -211,7 +192,7 @@ async def fetch_unique_images_concurrently(num_images):
     return images
 
 
-@api.route("/get_random_images", methods=["GET"])
+# @api.route("/get_random_images", methods=["GET"])
 def get_random_images():
     """
     Fetch a specified number of unique random images from the Likepoems API.
@@ -237,42 +218,10 @@ def get_random_images():
         return jsonify({"error": str(e)}), 500
 
 
-# Homepage route
-@api.route("/", methods=["GET"])
+# @api.route("/")
 def index():
-    """
-    Homepage for the website.
-    Displays a welcome message.
-    """
     return render_template("index.html")
 
 
-@api.route("/example_usage", methods=["GET"])
-def example_usage():
-    """
-    Example of programmatically using the APIs within the Flask app.
-    Calls '/create_game' and '/leaderboard' programmatically.
-    """
-    # Call the /create_game endpoint
-    cards = list(range(1, 9)) * 2
-    random.shuffle(cards)
-    new_layout = CardLayout(
-        layout=cards, created_at=datetime.now(timezone.utc)
-    )
-    db.session.add(new_layout)
-    db.session.commit()
-
-    # Fetch leaderboard data
-    scores = (
-        PlayerScore.query.order_by(PlayerScore.completion_time.asc())
-        .limit(10)
-        .all()
-    )
-
-    return jsonify(
-        {
-            "message": "Example usage of APIs",
-            "new_game": new_layout.to_dict(),
-            "leaderboard": [score.to_dict() for score in scores],
-        }
-    ), 200
+def game():
+    return render_template("game.html")

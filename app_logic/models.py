@@ -1,6 +1,8 @@
-from app import db
-from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSONB
+
+from datetime import datetime, timezone
+
+from app_logic.database import db
 
 
 class CardLayout(db.Model):

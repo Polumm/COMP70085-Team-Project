@@ -1,58 +1,30 @@
-import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from adbc_driver_postgresql.dbapi import connect
-import random
-import json  # For converting Python objects to JSON
+
+import os
 from datetime import datetime, timezone
-import configparser
-
-# Initialize Flask extensions
-db = SQLAlchemy()
-migrate = Migrate()
+import json  # For converting Python objects to JSON
 
 
-def init_db_connection(db_url):
-    """
-    Initialize a database connection using a given URL.
-    :param db_url: The database connection URL.
-    :return: A connection and cursor object.
-    """
-    conn = connect(db_url)
-    cur = conn.cursor()
-    return conn, cur
+from app_logic.database import (
+    init_db_connection,
+    load_sql_queries,
+    generate_card_layout,
+    db,
+    migrate,
+)
 
 
-def generate_card_layout(num_pairs=8):
-    """
-    Generate a shuffled card layout for the game.
-    :param num_pairs: Number of unique card pairs to generate.
-    :return: A shuffled list of card pairs.
-    """
-    cards = list(range(1, num_pairs + 1)) * 2  # Create pairs
-    random.shuffle(cards)  # Shuffle the cards
-    return cards
-
-
-def load_sql_queries(config_file):
-    """
-    Load SQL queries from an `.ini` file.
-    :param config_file: Path to the SQL queries file.
-    :return: ConfigParser object with loaded SQL queries.
-    """
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    return config
-
-
-def create_app(generate_game=False):
+def create_app(
+    app_name: str,
+    template_folder=os.path.abspath("templates"),
+    generate_game=False,
+):
     """
     Flask application factory pattern for creating app instances.
     :param generate_game: Whether to generate new card layouts.
     :return: Configured Flask app instance.
     """
-    app = Flask(__name__)
+    app = Flask(app_name, template_folder=template_folder)
 
     # Load sensitive configurations from environment variables
     target_db_url = os.getenv("TARGET_DB_URL")  # Database URL for PostgreSQL
@@ -67,7 +39,7 @@ def create_app(generate_game=False):
         )
 
     # Load SQL queries from the configuration file
-    sql_queries = load_sql_queries("app/sql_queries.ini")
+    sql_queries = load_sql_queries("app_logic/sql_queries.ini")
 
     # Initialize target database connections
     target_conn, target_cur = init_db_connection(target_db_url)
@@ -100,8 +72,8 @@ def create_app(generate_game=False):
     migrate.init_app(app, db)
 
     # Import and register API routes
-    from app.routes import api
+    # from app_logic.routes import api
 
-    app.register_blueprint(api, url_prefix="/")
+    # app.register_blueprint(api, url_prefix="/")
 
     return app
