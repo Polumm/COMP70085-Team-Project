@@ -27,13 +27,3 @@ app.route("/create_game", methods=["POST"])(create_game)
 app.route("/submit_score", methods=["POST"])(submit_score)
 app.route("/get_card_layouts", methods=["GET"])(get_card_layouts)
 app.route("/get_random_images", methods=["GET"])(get_random_images)
-
-
-@app.route("/test")
-def test():
-    return render_template(
-        """<div class="button-container">
-        <a href="game" class="button">{{1+1}}</a>
-        <a href="leaderboard" class="button">View Leaderboard</a>
-      </div>"""
-    )

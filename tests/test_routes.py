@@ -1,13 +1,22 @@
 import pytest
-from app import create_app, db
-from app.models import CardLayout, PlayerScore
+
 import os
+
+import sys
+
+print(sys.path)
+
+from app_logic.database import db
+from app_logic.models import CardLayout, PlayerScore
+from app_logic.init_app import create_app
 
 
 @pytest.fixture(scope="module")
 def app():
     """Create a Flask application for testing."""
-    app = create_app(generate_game=False)  # Disable card layout generation
+    app = create_app(
+        __name__, generate_game=False
+    )  # Disable card layout generation
     app.config.update(
         {
             "TESTING": True,

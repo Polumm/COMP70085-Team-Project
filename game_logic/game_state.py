@@ -22,7 +22,7 @@ class Game:
 
             shuffle(self._cards)  # make the order of the cards random
         else:
-            assert num_pairs == len(
+            assert num_pairs * 2 == len(
                 test_cards
             ), "The board size doesn't match the board you gave me!"
             self._cards = list(test_cards)
