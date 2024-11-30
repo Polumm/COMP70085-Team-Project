@@ -103,4 +103,4 @@ jobs:
           TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
           FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
-          pytest
+          python -m pytest
