@@ -18,7 +18,7 @@ class TestGame(unittest.TestCase):
             Card(0),
             Card(3),
         ]
-        test_game = Game(board_size=10, test_cards=test_cards)
+        test_game = Game(num_pairs=5, test_cards=test_cards)
         test_game.flip(0)
         test_game.flip(1)
         test_game.flip(2)
@@ -39,7 +39,7 @@ class TestGame(unittest.TestCase):
             Card(0),
             Card(3),
         ]
-        answer_game = Game(10)
+        answer_game = Game(5)
         answer_game.set_board(answer_board)
         print(test_game)
         print(answer_game)
