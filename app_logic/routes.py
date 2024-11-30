@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import jsonify, request, render_template
 import aiohttp
 
 import random
@@ -8,14 +8,14 @@ import asyncio
 from app_logic.models import db, CardLayout, PlayerScore
 
 # Create a Blueprint for API routes
-api = Blueprint("api", __name__)
+# api = Blueprint("api", __name__)
 
 # ==============================
 # API ENDPOINTS
 # ==============================
 
 
-@api.route("/leaderboard", methods=["GET"])
+# @api.route("/leaderboard", methods=["GET"])
 def leaderboard():
     """
     Retrieve the leaderboard
@@ -38,7 +38,7 @@ def leaderboard():
         ), 500
 
 
-@api.route("/create_game", methods=["POST"])
+# @api.route("/create_game", methods=["POST"])
 def create_game():
     """
     Create a new game card layout
@@ -66,7 +66,7 @@ def create_game():
         return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
 
 
-@api.route("/submit_score", methods=["POST"])
+# @api.route("/submit_score", methods=["POST"])
 def submit_score():
     """
     Submit a player's score
@@ -119,7 +119,7 @@ def submit_score():
         return jsonify({"error": f"Failed to submit score: {str(e)}"}), 500
 
 
-@api.route("/get_card_layouts", methods=["GET"])
+# @api.route("/get_card_layouts", methods=["GET"])
 def get_card_layouts():
     """
     Fetch all card layouts from the database
@@ -192,7 +192,7 @@ async def fetch_unique_images_concurrently(num_images):
     return images
 
 
-@api.route("/get_random_images", methods=["GET"])
+# @api.route("/get_random_images", methods=["GET"])
 def get_random_images():
     """
     Fetch a specified number of unique random images from the Likepoems API.
@@ -217,6 +217,11 @@ def get_random_images():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@api.route("/")
+
+# @api.route("/")
 def index():
     return render_template("index.html")
+
+
+def game():
+    return render_template("game.html")
