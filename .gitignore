@@ -4,3 +4,5 @@ app/__pycache__
 .pytest_cache
 .venv/
 migrations
+
+.DS_Store
