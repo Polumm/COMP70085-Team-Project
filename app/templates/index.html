@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        p {
+            color: #666;
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Memory Game API</h1>
+    <p>Below are the available API endpoints for this project:</p>
+    <ul>
+        <li>
+            <strong>Leaderboard:</strong>
+            <p>Fetch the top 10 player scores ranked by completion time.</p>
+            <a href="/leaderboard" target="_blank">GET /leaderboard</a>
+        </li>
+        <li>
+            <strong>Create Game:</strong>
+            <p>Generate a new random card layout and save it in the database.</p>
+            <code>POST /create_game</code>
+        </li>
+        <li>
+            <strong>Submit Score:</strong>
+            <p>Submit a player's game result (name, completion time, and moves).</p>
+            <code>POST /submit_score</code>
+        </li>
+        <li>
+            <strong>Get Card Layouts:</strong>
+            <p>Retrieve all saved card layouts in the database.</p>
+            <a href="/get_card_layouts" target="_blank">GET /get_card_layouts</a>
+        </li>
+        <li>
+            <strong>Get Random Images:</strong>
+            <p>Fetch a specified number of unique random images from an external API.</p>
+            <a href="/get_random_images?count=8" target="_blank">GET /get_random_images?count=8</a>
+        </li>
+    </ul>
+</body>
+</html>

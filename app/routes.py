@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, render_template, request
 from app.models import db, CardLayout, PlayerScore
 import random
 from datetime import datetime, timezone
@@ -214,3 +214,13 @@ def get_random_images():
         return jsonify(images), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# Homepage route
+@api.route("/", methods=["GET"])
+def index():
+    """
+    Homepage for the website.
+    Displays a welcome message.
+    """
+    return render_template("index.html")
