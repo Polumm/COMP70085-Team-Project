@@ -35,3 +35,5 @@ def register_apis(app, name: str):
 
     for route, (func, method) in backend_apis.items():
         api.route(route, method=method)(func)
+
+    app.register_blueprint(api)
