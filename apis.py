@@ -31,9 +31,9 @@ def register_apis(app, name: str):
     api = Blueprint("apis", name)
 
     for route, (func, method) in frontend_apis.items():
-        api.route(route, method=method)(func)
+        api.route(route, methods=method)(func)
 
     for route, (func, method) in backend_apis.items():
-        api.route(route, method=method)(func)
+        api.route(route, methods=method)(func)
 
     app.register_blueprint(api)
