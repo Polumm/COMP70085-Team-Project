@@ -8,8 +8,6 @@ import asyncio
 from app_logic.models import db, CardLayout, PlayerScore
 from game_logic.game_state import Game, games
 
-# Create a Blueprint for API routes
-# api = Blueprint("api", __name__)
 
 # ==============================
 # API ENDPOINTS
@@ -238,5 +236,6 @@ def index():
     return render_template("index.html")
 
 
+# @api.route("/game")
 def game():
     return render_template("game.html")
