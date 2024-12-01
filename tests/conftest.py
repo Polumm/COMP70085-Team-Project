@@ -4,6 +4,7 @@ import os
 
 from app_logic.init_app import create_app
 from app_logic.database import db
+from app_logic.routes import create_game
 
 
 @pytest.fixture(scope="module")
@@ -19,6 +20,7 @@ def app():
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
         }
     )
+    app.route("/create_game/<num_pairs>", methods=["POST"])(create_game)
     with app.app_context():
         yield app
 
