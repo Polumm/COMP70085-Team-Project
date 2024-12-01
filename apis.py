@@ -12,20 +12,26 @@ from app_logic.routes import (
 )
 
 
-# Create a Blueprint for API routes
+frontend_apis = {
+    "/": (index, ["GET"]),
+    "/game": (game, ["GET"]),
+}
+
+backend_apis = {
+    "/leaderboard": (leaderboard, ["GET"]),
+    "/create_game/<num_pairs>": (create_game, ["POST"]),
+    "/submit_score": (submit_score, ["POST"]),
+    "/get_card_layouts": (get_card_layouts, ["GET"]),
+    "/get_random_images": (get_random_images, ["GET"]),
+    "/flip/<game_id>/<card_index>": (flip, ["POST"]),
+}
+
+
 def register_apis(app, name: str):
-    api = Blueprint("api", name)
+    api = Blueprint(app, name)
 
-    # frontend apis
-    api.route("/")(index)
-    api.route("/game")(game)
+    for route, (func, method) in frontend_apis.items():
+        api.route(route, method=method)(func)
 
-    # backend apis
-    api.route("/leaderboard", methods=["GET"])(leaderboard)
-    api.route("/create_game/<num_pairs>", methods=["POST"])(create_game)
-    api.route("/submit_score", methods=["POST"])(submit_score)
-    api.route("/get_card_layouts", methods=["GET"])(get_card_layouts)
-    api.route("/get_random_images", methods=["GET"])(get_random_images)
-    api.route("/flip/<game_id>/<card_index>", methods=["POST"])(flip)
-
-    app.register_blueprint(api)
+    for route, (func, method) in backend_apis.items():
+        api.route(route, method=method)(func)
