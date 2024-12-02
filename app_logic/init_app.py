@@ -17,7 +17,7 @@ def create_app(
     Flask application factory pattern for creating app instances.
     :param app_name: Name of the Flask application.
     :param template_folder: Path to the templates folder.
-    :param isTest: Boolean flag to determine whether to use testing or production database URL.
+    :param isTest: Whether to use testing or production database URL.
     :return: Configured Flask app instance.
     """
     app = Flask(app_name, template_folder=template_folder)
