@@ -34,7 +34,7 @@ def create_game(num_pairs: int | str):
 
 
 # route("/create_default_game", methods=["POST"])
-def create_default_game(num_pairs: int | str):
+def create_default_game():
     """
     Create a new game card layout
     - Generates a random shuffled card layout (each card appears twice).
