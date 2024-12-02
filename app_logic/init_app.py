@@ -1,14 +1,10 @@
 from flask import Flask
-
 import os
-from datetime import datetime, timezone
-import json  # For converting Python objects to JSON
 
 
 from app_logic.database import (
     init_db_connection,
     load_sql_queries,
-    generate_card_layout,
     db,
     migrate,
 )
@@ -17,11 +13,9 @@ from app_logic.database import (
 def create_app(
     app_name: str,
     template_folder=os.path.abspath("templates"),
-    generate_game=False,
 ):
     """
     Flask application factory pattern for creating app instances.
-    :param generate_game: Whether to generate new card layouts.
     :return: Configured Flask app instance.
     """
     app = Flask(app_name, template_folder=template_folder)
@@ -45,21 +39,7 @@ def create_app(
     target_conn, target_cur = init_db_connection(target_db_url)
 
     # Create tables in the target database
-    target_cur.execute(sql_queries["table_creation"]["create_card_layouts"])
     target_cur.execute(sql_queries["table_creation"]["create_player_scores"])
-
-    # Optionally generate and save card layouts
-    if generate_game:
-        for _ in range(5):  # Generate 5 example layouts
-            layout = generate_card_layout()
-            layout_json = json.dumps(layout)  # Convert layout to JSON format
-            target_cur.execute(
-                sql_queries["insert_queries"]["insert_card_layout"],
-                (layout_json, datetime.now(timezone.utc)),
-            )
-
-        # Commit changes to the database
-        target_conn.commit()
 
     # Close database connections
     target_cur.close()
@@ -70,10 +50,5 @@ def create_app(
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate.init_app(app, db)
-
-    # Import and register API routes
-    # from app_logic.routes import api
-
-    # app.register_blueprint(api, url_prefix="/")
 
     return app

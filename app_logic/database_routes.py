@@ -2,7 +2,7 @@ from flask import jsonify, request
 
 from datetime import datetime, timezone
 
-from app_logic.models import db, CardLayout, PlayerScore
+from app_logic.models import db, PlayerScore
 
 
 # ==============================
@@ -84,28 +84,3 @@ def submit_score():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Failed to submit score: {str(e)}"}), 500
-
-
-# @api.route("/get_card_layouts", methods=["GET"])
-def get_card_layouts():
-    """
-    Fetch all card layouts from the database
-    - Retrieves all saved card layouts (latest first).
-
-    Returns:
-        JSON list of card layouts, or an error message if the query fails.
-    """
-    try:
-        # Fetch all card layouts
-        layouts = CardLayout.query.order_by(CardLayout.created_at.desc()).all()
-
-        if not layouts:
-            return jsonify({"error": "No card layouts available"}), 404
-
-        # Return the layouts as a list of dictionaries
-        return jsonify([layout.to_dict() for layout in layouts]), 200
-
-    except Exception as e:
-        return jsonify(
-            {"error": f"Failed to fetch card layouts: {str(e)}"}
-        ), 500

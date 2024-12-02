@@ -10,9 +10,7 @@ from app_logic.database import db
 @pytest.fixture(scope="module")
 def app():
     """Create a Flask application for testing."""
-    app = create_app(
-        __name__, generate_game=False
-    )  # Disable card layout generation
+    app = create_app(__name__)
     app.config.update(
         {
             "TESTING": True,
