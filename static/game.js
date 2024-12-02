@@ -7,50 +7,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.startGame = async function() {
         try {
-            // 生成一个 4 到 20 之间的随机对数
-            const numPairs = Math.floor(Math.random() * 17) + 4;
+            // 固定卡牌数量为 10 对（20 张卡片）
+            const numPairs = 10;
             const totalCards = numPairs * 2;
-
+    
             // 调用 API 创建新游戏
-            const response = await fetch(`/create_game/${numPairs}`, { method: 'POST' });
+            const response = await fetch(`/create_default_game`, { method: 'POST' });
             if (!response.ok) {
                 throw new Error('Failed to create game');
             }
             const newGameId = await response.json();
             game_id = newGameId;
-
+    
             // 重置游戏状态
             gameBoard.innerHTML = '';
             lockBoard = false;
             moves = 0;
             startTime = Date.now();
-
+    
             // 获取随机图片作为卡片内容
             const imageResponse = await fetch(`/get_random_images?count=${numPairs}`);
             if (!imageResponse.ok) {
                 throw new Error('Failed to fetch images');
             }
             const images = await imageResponse.json();
-
+    
             // 生成游戏卡片
             let cards = generateCardArray(numPairs);
             cards = shuffle(cards);
-
-            // 动态生成卡片布局
-            const rows = Math.floor(Math.sqrt(totalCards));
-            const cols = Math.ceil(totalCards / rows);
+    
+            // 固定生成 5 行 4 列的卡片布局
+            const rows = 5;
+            const cols = 4;
             let cardIndex = 0;
-
+    
             for (let row = 0; row < rows; row++) {
                 const rowElement = document.createElement('div');
                 rowElement.classList.add('row');
-
+                rowElement.style.display = 'flex';
+                rowElement.style.justifyContent = 'center';
+                rowElement.style.marginBottom = '15px';
+    
                 for (let col = 0; col < cols; col++) {
                     if (cardIndex >= totalCards) break;
                     const card = cards[cardIndex];
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
+                    cardElement.style.width = '80px';
+                    cardElement.style.height = '120px';
+                    cardElement.style.margin = '10px';
                     cardElement.innerHTML = `
                         <div class="card-back"></div>
                         <div class="card-front"><img src="${images[card - 1].url}" alt="Card Image"></div>
@@ -59,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     rowElement.appendChild(cardElement);
                     cardIndex++;
                 }
-
+    
                 gameBoard.appendChild(rowElement);
             }
         } catch (error) {
             console.error('Error starting the game:', error);
         }
-    }
+    }    
 
     async function flipCard(cardElement) {
         if (lockBoard || cardElement.classList.contains('flipped')) return;
