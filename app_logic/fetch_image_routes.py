@@ -8,7 +8,7 @@ import asyncio
 # FETCH RANDOM IMAGES FROM EXTERNAL API
 # ==============================
 
-LIKEPOEMS_IMAGE_API = "https://api.likepoems.com/img/bing/"
+DUCK_API_BASE_URL = "https://random-d.uk/api"
 
 
 async def fetch_image(session):
@@ -19,13 +19,14 @@ async def fetch_image(session):
     Returns:
         A dictionary containing the URL of the fetched image.
     """
-    async with session.get(LIKEPOEMS_IMAGE_API) as response:
-        return {"url": str(response.url)}
+    async with session.get(DUCK_API_BASE_URL + "/random") as response:
+        data = await response.json()
+        return {"url": data["url"]}
 
 
 async def fetch_unique_images_concurrently(num_images):
     """
-    Fetch multiple unique images concurrently from the Likepoems API.
+    Fetch multiple unique images concurrently from the Duck API.
     - Ensures the fetched image URLs are unique.
 
     Args:
@@ -55,7 +56,7 @@ async def fetch_unique_images_concurrently(num_images):
 # @api.route("/get_random_images", methods=["GET"])
 def get_random_images():
     """
-    Fetch a specified number of unique random images from the Likepoems API.
+    Fetch a specified number of unique random images from the Duck API.
     - Makes concurrent requests to fetch the specified number of unique images.
 
     Query Parameters:
