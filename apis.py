@@ -1,15 +1,13 @@
 from flask import Blueprint
 
-from app_logic.routes import (
-    game,
+from app_logic.database_routes import (
     leaderboard,
-    create_game,
     submit_score,
     get_card_layouts,
-    get_random_images,
-    index,
-    flip,
 )
+from app_logic.game_routes import create_game, flip
+from app_logic.page_routes import game, index
+from app_logic.fetch_image_routes import get_random_images
 
 
 frontend_apis = {
