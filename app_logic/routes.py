@@ -161,24 +161,26 @@ def get_card_layouts():
 # FETCH RANDOM IMAGES FROM EXTERNAL API
 # ==============================
 
-LIKEPOEMS_IMAGE_API = "https://api.likepoems.com/img/bing/"
+# Base URL for the random-d.uk API
+DUCK_API_BASE_URL = "https://random-d.uk/api"
 
 
 async def fetch_image(session):
     """
-    Fetch a single image from the Likepoems API.
-    - Makes an HTTP GET request to the API to retrieve a random image.
+    Fetch a single random image from the random-d.uk API.
+    - Makes an HTTP GET request to fetch a random image.
 
     Returns:
         A dictionary containing the URL of the fetched image.
     """
-    async with session.get(LIKEPOEMS_IMAGE_API) as response:
-        return {"url": str(response.url)}
+    async with session.get(f"{DUCK_API_BASE_URL}/random") as response:
+        data = await response.json()  # Parse the JSON response
+        return {"url": data["url"]}
 
 
 async def fetch_unique_images_concurrently(num_images):
     """
-    Fetch multiple unique images concurrently from the Likepoems API.
+    Fetch multiple unique images concurrently from the random-d.uk API.
     - Ensures the fetched image URLs are unique.
 
     Args:
@@ -208,7 +210,7 @@ async def fetch_unique_images_concurrently(num_images):
 # @api.route("/get_random_images", methods=["GET"])
 def get_random_images():
     """
-    Fetch a specified number of unique random images from the Likepoems API.
+    Fetch a specified number of unique random images from the random-d.uk API.
     - Makes concurrent requests to fetch the specified number of unique images.
 
     Query Parameters:
