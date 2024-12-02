@@ -23,9 +23,9 @@ def create_game(num_pairs: int | str):
         game_id = id(game)
 
         # Save the layout in the database
-        # layout = CardLayout(layout=None, created_at=datetime.now(timezone.utc))
-        # db.session.add(layout)
-        # db.session.commit()
+        layout = CardLayout(layout=None, created_at=datetime.now(timezone.utc))
+        db.session.add(layout)
+        db.session.commit()
 
         games[game_id] = game
 

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentlyRevealedSecretIndex = null;
     let currentlyRevealedCard = null;
 
-    window.startGame = async function() {
+    window.startGame = async function () {
         moves = 0;
         try {
             // 固定卡牌数量为 10 对（20 张卡片）
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!imageResponse.ok) {
                 throw new Error('Failed to fetch images');
             }
+<<<<<<< HEAD
             images = await imageResponse.json();
 
             // 生成游戏卡片
@@ -53,21 +54,49 @@ document.addEventListener('DOMContentLoaded', () => {
             // 固定生成 4 行 5 列的卡片布局
             const rows = 4;
             const cols = 5;
+=======
+            const images = await imageResponse.json();
+
+            // 生成游戏卡片
+            let cards = generateCardArray(numPairs);
+            cards = shuffle(cards);
+
+            // 固定生成 5 行 4 列的卡片布局
+            const rows = 5;
+            const cols = 4;
+>>>>>>> a1f6d2f (1202)
             let cardIndex = 0;
 
             for (let row = 0; row < rows; row++) {
                 const rowElement = document.createElement('div');
                 rowElement.classList.add('row');
+<<<<<<< HEAD
                 // rowElement.style.display = 'flex';
                 // rowElement.style.justifyContent = 'center';
                 // rowElement.style.marginBottom = '15px';
 
+=======
+                rowElement.style.display = 'flex';
+                rowElement.style.justifyContent = 'center';
+                rowElement.style.marginBottom = '15px';
+
+>>>>>>> a1f6d2f (1202)
                 for (let col = 0; col < cols; col++) {
                     if (cardIndex >= totalCards) break;
                     const card = cards[cardIndex];
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
+<<<<<<< HEAD
+=======
+                    cardElement.style.width = '80px';
+                    cardElement.style.height = '120px';
+                    cardElement.style.margin = '10px';
+                    cardElement.innerHTML = `
+                        <div class="card-back"></div>
+                        <div class="card-front"><img src="${images[card - 1].url}" alt="Card Image"></div>
+                    `;
+>>>>>>> a1f6d2f (1202)
                     cardElement.addEventListener('click', () => flipCard(cardElement));
                     rowElement.appendChild(cardElement);
                     cardIndex++;
