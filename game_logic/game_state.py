@@ -87,6 +87,12 @@ class Game:
     def get_flip_count(self) -> int:
         return self._flip_count
 
+    def get_num_pairs(self) -> int:
+        return self._num_pairs
+
+    def detect_finished(self) -> bool:
+        return all(card is None for card in self._cards)
+
     # This method is only for testing purposes
     def force_reveal(self, target: int):
         target_card = self._get_card(target)

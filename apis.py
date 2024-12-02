@@ -1,15 +1,21 @@
 from flask import Blueprint
 
-from app_logic.routes import (
-    game,
+from app_logic.database_routes import (
     leaderboard,
-    create_game,
     submit_score,
     get_card_layouts,
-    get_random_images,
-    index,
-    flip,
 )
+from app_logic.game_routes import (
+    create_game,
+    flip,
+    get_time,
+    get_flip_count,
+    reset_game,
+    delete_game,
+    detect_game_finish,
+)
+from app_logic.page_routes import game, index
+from app_logic.fetch_image_routes import get_random_images
 
 
 frontend_apis = {
@@ -17,23 +23,32 @@ frontend_apis = {
     "/game": (game, ["GET"]),
 }
 
-backend_apis = {
+database_apis = {
     "/leaderboard": (leaderboard, ["GET"]),
-    "/create_game/<num_pairs>": (create_game, ["POST"]),
     "/submit_score": (submit_score, ["POST"]),
     "/get_card_layouts": (get_card_layouts, ["GET"]),
+}
+
+fetch_image_apis = {
     "/get_random_images": (get_random_images, ["GET"]),
+}
+
+game_apis = {
+    "/create_game/<num_pairs>": (create_game, ["POST"]),
     "/flip/<game_id>/<card_index>": (flip, ["POST"]),
+    "/get_time/<num_pairs>": (get_time, ["GET"]),
+    "/get_flip_count/<num_pairs>": (get_flip_count, ["GET"]),
+    "/reset_game/<num_pairs>": (reset_game, ["POST"]),
+    "/delete_game/<num_pairs>": (delete_game, ["POST"]),
+    "/detect_game_finish/<num_pairs>": (detect_game_finish, ["GET"]),
 }
 
 
 def register_apis(app, name: str):
-    api = Blueprint("apis", name)
+    apis = Blueprint("apis", name)
 
-    for route, (func, method) in frontend_apis.items():
-        api.route(route, methods=method)(func)
+    for api_set in (frontend_apis, database_apis, fetch_image_apis, game_apis):
+        for route, (func, method) in api_set.items():
+            apis.route(route, methods=method)(func)
 
-    for route, (func, method) in backend_apis.items():
-        api.route(route, methods=method)(func)
-
-    app.register_blueprint(api)
+    app.register_blueprint(apis)
