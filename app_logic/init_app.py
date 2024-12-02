@@ -11,25 +11,32 @@ from app_logic.database import (
 
 
 def create_app(
-    app_name: str,
-    template_folder=os.path.abspath("templates"),
+    app_name: str, template_folder=os.path.abspath("templates"), isTest=False
 ):
     """
     Flask application factory pattern for creating app instances.
+    :param app_name: Name of the Flask application.
+    :param template_folder: Path to the templates folder.
+    :param isTest: Boolean flag to determine whether to use testing or production database URL.
     :return: Configured Flask app instance.
     """
     app = Flask(app_name, template_folder=template_folder)
 
-    # Load sensitive configurations from environment variables
-    target_db_url = os.getenv("TARGET_DB_URL")  # Database URL for PostgreSQL
-    flask_db_url = os.getenv(
-        "FLASK_DB_URL"
-    )  # SQLAlchemy database URL for Flask
+    # Choose the appropriate database URL based on isTest
+    target_db_url = (
+        os.getenv("TEST_TARGET_DB_URL")
+        if isTest
+        else os.getenv("TARGET_DB_URL")
+    )
+    flask_db_url = (
+        os.getenv("TEST_FLASK_DB_URL") if isTest else os.getenv("FLASK_DB_URL")
+    )
 
     if not target_db_url or not flask_db_url:
         raise RuntimeError(
             "Missing required environment variables: "
-            "TARGET_DB_URL and FLASK_DB_URL"
+            f"{'TEST_TARGET_DB_URL' if isTest else 'TARGET_DB_URL'} and "
+            f"{'TEST_FLASK_DB_URL' if isTest else 'FLASK_DB_URL'}"
         )
 
     # Load SQL queries from the configuration file

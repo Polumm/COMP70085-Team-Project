@@ -23,14 +23,9 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-  deploy:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Deploy to Production
-        run: |
-          echo "Deploying to production environment"
-          # Add production deployment command here
+      - name: Deploy to Impaas
+        uses: /impaas/impaas-deploy@v3
+        with:
+          app-name: cs824-sse-app
+          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+          method: PLATFORM

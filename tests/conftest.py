@@ -10,11 +10,11 @@ from app_logic.database import db
 @pytest.fixture(scope="module")
 def app():
     """Create a Flask application for testing."""
-    app = create_app(__name__)
+    app = create_app(__name__, isTest=True)
     app.config.update(
         {
             "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": os.getenv("FLASK_DB_URL"),
+            "SQLALCHEMY_DATABASE_URI": os.getenv("TEST_TARGET_DB_URL"),
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
         }
     )
