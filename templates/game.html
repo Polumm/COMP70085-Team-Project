@@ -1,226 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlipMatch Adventure</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        font-family: 'Roboto', sans-serif;
-        margin: 0;
-        padding: 0;
-        background: url({{url_for("static", filename="img/background.jpg")}}) no-repeat center center fixed;
-        background-size: cover;
-        color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-      }
 
-      .container {
-        width: 95%;
-        max-width: 1000px;
-        background: rgba(0, 0, 0, 0.7);
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlipMatch Adventure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/game_style.css') }}" />
+</head>
 
-      .title {
-        font-size: 1.5em;
-        font-weight: 700;
-        margin-top: 40px;
-        margin-bottom: 10px;
-      }
-
-      .game-board {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-        width: 100%;
-        align-items: center;
-      }
-
-      .row {
-        display: grid;
-        gap: 15px;
-      }
-
-      .row {
-        grid-template-columns: repeat(8, 1fr);
-      }
-
-      .card {
-        width: 80px;
-        height: 120px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      }
-
-      .card-back {
-        width: 20vw; /* 默认宽度占据视口宽度的 20% */
-        aspect-ratio: 4 / 5; /* 保持宽高比为 4:5 */
-        background: #ccc; /* 默认背景色 */
-        border-radius: 10px; /* 圆角效果 */
-        overflow: hidden; /* 确保图片裁剪 */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 添加阴影效果 */
-      }
-
-      .card-back img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .card.flipped img {
-        display: block;
-      }
-
-      .card.front {
-        background: #fdbb2d;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 700;
-        color: #1a2a6c;
-      }
-
-      .score-panel {
-        margin-bottom: 20px;
-        text-align: center;
-      }
-
-      .score-panel button {
-        margin-top: 40px;
-        background: #fdbb2d;
-        border: none;
-        border-radius: 10px;
-        padding: 10px 20px;
-        font-size: 1em;
-        font-weight: 700;
-        color: #1a2a6c;
-        cursor: pointer;
-        transition: background 0.3s ease;
-      }
-
-      .score-panel button:hover {
-        background: #ffc75f;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="title">FlipMatch Adventure</div>
-      <div class="score-panel">
-        <p>Match all the cards as quickly as you can!</p>
-        <button onclick="startGame()">Start New Game</button>
-      </div>
-      <div class="game-board" id="game-board">
-        <!-- Rows of cards -->
-        <div class="row" id="row-1"></div>
-        <div class="row" id="row-2"></div>
-      </div>
+<body>
+  <div class="container">
+    <div class="title">FlipMatch Adventure</div>
+    <div class="score-panel">
+      <p>Match all the cards as quickly as you can!</p>
+      <button onclick="startGame()">Start New Game</button>
     </div>
+    <div class="game-board" id="game-board">
+    </div>
+  </div>
 
-    <script>
-      const UNSPLASH_API_URL =
-        "https://api.unsplash.com/photos/random?count=8&client_id=amBRe7czSSZTFwnopRm0iqwa4CRLZc3lMYqIR-p15cE";
+  <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
 
-      let cardImages = [];
-      let flippedCards = [];
-
-      async function fetchImages() {
-        try {
-          let response = await fetch(UNSPLASH_API_URL);
-          let data = await response.json();
-          cardImages = data.map((img) => img.urls.small);
-        } catch (error) {
-          console.error("Error fetching images from Unsplash:", error);
-        }
-      }
-
-      async function startGame() {
-        // Fetch random images from Unsplash
-        await fetchImages();
-
-        // Duplicate images and shuffle cards
-        let images = [...cardImages, ...cardImages];
-        images.sort(() => 0.5 - Math.random());
-
-        // Clear the game board
-        document.getElementById("row-1").innerHTML = "";
-        document.getElementById("row-2").innerHTML = "";
-
-        // Create cards and add them to the rows
-        images.forEach((image, index) => {
-          let card = document.createElement("div");
-          card.classList.add("card");
-          card.dataset.index = index;
-
-          let front = document.createElement("div");
-          front.classList.add("front");
-          front.innerText = "?";
-
-          let img = document.createElement("img");
-          img.src = image;
-
-          card.appendChild(front);
-          card.appendChild(img);
-
-          card.addEventListener("click", () => flipCard(card));
-
-          // Add cards to specific rows
-          if (index < 8) {
-            document.getElementById("row-1").appendChild(card);
-          } else {
-            document.getElementById("row-2").appendChild(card);
-          }
-        });
-      }
-
-      function flipCard(card) {
-        if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
-          card.classList.add("flipped");
-          flippedCards.push(card);
-        }
-
-        if (flippedCards.length === 2) {
-          setTimeout(checkMatch, 1000);
-        }
-      }
-
-      function checkMatch() {
-        let [card1, card2] = flippedCards;
-        let img1 = card1.querySelector("img").src;
-        let img2 = card2.querySelector("img").src;
-
-        if (img1 === img2) {
-          // Cards match, leave them flipped
-          flippedCards = [];
-        } else {
-          // Cards do not match, flip them back
-          card1.classList.remove("flipped");
-          card2.classList.remove("flipped");
-          flippedCards = [];
-        }
-      }
-    </script>
-  </body>
 </html>
