@@ -1,6 +1,3 @@
-from app_logic.models import CardLayout
-
-
 def test_submit_score(client):
     """Test the /submit_score route."""
     payload = {
