@@ -78,27 +78,39 @@ document.addEventListener('DOMContentLoaded', () => {
         // 调用 API 检查卡片是否匹配
         try {
             const cardIndex = cardElement.dataset.index;
-            const response = await fetch(`/flip/${game_id}/${cardIndex}`, {
+            const response = await fetch(`/flip/${gameId}/${cardIndex}`, {
                 method: 'POST',
             });
             const result = await response.json();
 
-            if (result.matched) {
-                // 如果匹配成功，保持卡片翻开状态
-                lockBoard = false;
-                if (document.querySelectorAll('.card.flipped').length === numPairs * 2) {
-                    setTimeout(submitScore, 500); // 所有卡片匹配成功后提交分数
-                }
-            } else {
-                // 如果匹配失败，将卡片翻回去
+            if (result === -1) {
+                // 如果返回 -1，翻牌无效，翻回去
                 setTimeout(() => {
                     cardElement.classList.remove('flipped');
-                    const firstFlippedCard = document.querySelector('.card.flipped:not([data-index="' + cardIndex + '"])');
-                    if (firstFlippedCard) {
-                        firstFlippedCard.classList.remove('flipped');
-                    }
                     lockBoard = false;
                 }, 1000);
+            } else {
+                // 如果返回有效的 secret_index，说明匹配成功或需要移除卡片
+                const secretIndex = result;
+
+                // 找到所有和该 secret_index 匹配的卡片
+                const matchingCards = document.querySelectorAll(`.card[data-value="${secretIndex}"]`);
+
+                if (matchingCards.length === 2) {
+                    // 如果找到两张卡片，移除它们
+                    setTimeout(() => {
+                        matchingCards.forEach(card => card.remove());
+                        lockBoard = false;
+
+                        // 检查游戏是否结束
+                        if (document.querySelectorAll('.card').length === 0) {
+                            setTimeout(submitScore, 500); // 所有卡片匹配成功后提交分数
+                        }
+                    }, 500);
+                } else {
+                    // 如果有问题（例如没有两张卡片），解锁牌板（防止卡住）
+                    lockBoard = false;
+                }
             }
         } catch (error) {
             console.error('Failed to flip the card:', error);
