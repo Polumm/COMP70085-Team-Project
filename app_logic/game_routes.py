@@ -50,7 +50,7 @@ def flip(game_id: int | str, card_index: int | str):
 def get_time(game_id: int | str):
     try:
         game = games[int(game_id)]
-        return jsonify(game.get_time())
+        return jsonify(game.get_time()), 201
     except KeyError:
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
@@ -61,7 +61,7 @@ def get_time(game_id: int | str):
 def get_flip_count(game_id: int | str):
     try:
         game = games[int(game_id)]
-        return jsonify(game.get_flip_count())
+        return jsonify(game.get_flip_count()), 201
     except KeyError:
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
@@ -81,4 +81,25 @@ def reset_game(game_id: int | str):
         return jsonify({"error": "The game id is invalid"}), 400
 
 
-# route()
+# route("/detect_game_finish/<game_id>")
+def detect_game_finish(game_id: int | str):
+    try:
+        game_id = int(game_id)
+        game = games[game_id]
+        return jsonify(game.detect_finished()), 201
+    except KeyError:
+        return jsonify({"error": "The game doesn't exist"}), 400
+    except ValueError:
+        return jsonify({"error": "The game id is invalid"}), 400
+
+
+# route(/delete_game/<game_id>)
+def delete_game(game_id: int | str):
+    try:
+        game_id = int(game_id)
+        del games[game_id]
+        return jsonify(True), 201
+    except KeyError:
+        return jsonify({"error": "The game doesn't exist"}), 400
+    except ValueError:
+        return jsonify({"error": "The game id is invalid"}), 400
