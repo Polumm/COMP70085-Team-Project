@@ -33,6 +33,19 @@ def create_game(num_pairs: int | str):
         return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
 
 
+# route("/create_default_game", methods=["POST"])
+def create_default_game(num_pairs: int | str):
+    """
+    Create a new game card layout
+    - Generates a random shuffled card layout (each card appears twice).
+    - Saves the layout into the database.
+
+    Returns:
+        The created card layout in JSON format.
+    """
+    return create_game(10)
+
+
 # route("/flip/<game_id>/<card_index>", methods=["POST"])
 def flip(game_id: int | str, card_index: int | str):
     try:

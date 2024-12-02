@@ -6,6 +6,7 @@ from app_logic.database_routes import (
 )
 from app_logic.game_routes import (
     create_game,
+    create_default_game,
     flip,
     get_time,
     get_flip_count,
@@ -33,6 +34,7 @@ fetch_image_apis = {
 
 game_apis = {
     "/create_game/<num_pairs>": (create_game, ["POST"]),
+    "/create_default_game": (create_default_game, ["POST"]),
     "/flip/<game_id>/<card_index>": (flip, ["POST"]),
     "/get_time/<num_pairs>": (get_time, ["GET"]),
     "/get_flip_count/<num_pairs>": (get_flip_count, ["GET"]),
