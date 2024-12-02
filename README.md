@@ -13,8 +13,8 @@ A team project for COMP70085 Software Systems Engineering.
 | **Fun, Simple, and Useful** | The game is easy to play, improves memory, and provides a fun challenge.    |
 | **Production Deployment**   | Deployed using an Impaas platform, ensuring availability and usability.     |
 | **Interactivity**           | Users can click cards to reveal them dynamically, view stats, and save scores post-game. |
-| **External API**            | Utilizes Unsplash API to fetch random images, enhancing the gameplay experience. |
-| **Database Storage and Query** | Stores user scores using SQLite or PostgreSQL, supporting leaderboard queries.    |
+| **External API**            | We use the [https://random-d.uk/api](https://random-d.uk/api), listed in [public-apis](https://github.com/public-apis/public-apis), to fetch random images for the memory matching game as required. We use asynchronous programming with Python's `asyncio` and `aiohttp` to fetch images efficiently for high-volume requests. |
+| **Database Storage and Query** | Stores user scores using PostgreSQL, supporting leaderboard queries.    |
 | **Automated Testing**       | Backend APIs and database operations are tested using PyTest to ensure correctness. |
 | **Iterative Delivery**      | Development is divided into stages (API integration, game logic, database connection, frontend optimization, deployment). |
 | **Automated CI/CD Pipeline** | GitHub Actions ensure continuous integration, testing, and deployment.     |

@@ -3,7 +3,6 @@ from flask import Blueprint
 from app_logic.database_routes import (
     leaderboard,
     submit_score,
-    get_card_layouts,
 )
 from app_logic.game_routes import (
     create_game,
@@ -26,7 +25,6 @@ frontend_apis = {
 database_apis = {
     "/leaderboard": (leaderboard, ["GET"]),
     "/submit_score": (submit_score, ["POST"]),
-    "/get_card_layouts": (get_card_layouts, ["GET"]),
 }
 
 fetch_image_apis = {

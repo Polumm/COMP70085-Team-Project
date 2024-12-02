@@ -1,6 +1,3 @@
-from app_logic.models import CardLayout
-
-
 def test_submit_score(client):
     """Test the /submit_score route."""
     payload = {
@@ -20,30 +17,6 @@ def test_leaderboard(client):
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, list)
-
-
-def test_get_card_layouts_with_pairs(app):
-    """Test if the card layout contains pairs of numbers in sorted order."""
-    with app.app_context():
-        # Query the layout
-        queried_layout = CardLayout.query.first()
-
-        # Sort the layout
-        sorted_layout = sorted(queried_layout.layout)
-
-        # Validate pairs
-        pair_differences_sum = 0
-        for i in range(0, len(sorted_layout), 2):
-            assert (
-                sorted_layout[i] == sorted_layout[i + 1]
-            ), f"Cards {sorted_layout[i]} and {sorted_layout[i + 1]}"
-            " are not a pair"
-            pair_differences_sum += sorted_layout[i + 1] - sorted_layout[i]
-
-        # Assert the sum of all pair differences is 0
-        assert (
-            pair_differences_sum == 0
-        ), f"Pair differences do not sum to 0: {pair_differences_sum}"
 
 
 def test_get_random_images(client):
