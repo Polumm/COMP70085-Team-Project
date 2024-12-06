@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime, timezone
 
 
@@ -82,7 +81,7 @@ def test_leaderboard_order_and_limit(client, app):
 
     assert len(data) == 10  # Limit to top 10 entries
     times = [entry["completion_time"] for entry in data]
-    assert times == sorted(times)  # Ensure ordered by shortest time
+    assert times == sorted(times)  # Ensure correct order
 
 
 def test_empty_leaderboard(client, app):
