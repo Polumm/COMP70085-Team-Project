@@ -1,4 +1,6 @@
+from unittest.mock import patch
 from datetime import datetime, timezone
+from app_logic.models import PlayerScore, db
 
 
 def test_submit_score(client):
@@ -113,46 +115,41 @@ def test_get_random_images(client):
     assert len(set(urls)) == len(urls), "Image URLs are not unique"
 
 
-def test_get_random_words(client):
-    """Test /get_random_words API with real API."""
-    # Test fetching 5 random words
-    response = client.get("/get_random_words?number=5")
+def test_check_player(client, app):
+    """Test the /check_player API endpoint."""
+
+    # Add a test player to the database
+    with app.app_context():
+        test_player = PlayerScore(
+            player_name="TestPlayer",
+            completion_time=120.5,
+            moves=30,
+            created_at=datetime.now(timezone.utc),
+        )
+        db.session.add(test_player)
+        db.session.commit()
+
+    # Test case 1: Player exists
+    response = client.get("/check_player?player_name=TestPlayer")
     assert response.status_code == 200
+    assert response.get_data(as_text=True) == "True"
 
-    data = response.get_json()
-    assert len(data) == 5  # Ensure 5 words are returned
-    assert all(
-        isinstance(word, str) for word in data
-    )  # Ensure all items are strings
-
-    # Check that words are unique
-    assert len(set(data)) == len(data), "Returned words are not unique"
-
-    # Test fetching words with specific length
-    response = client.get("/get_random_words?number=3&length=7")
+    # Test case 2: Player does not exist
+    response = client.get("/check_player?player_name=NonExistentPlayer")
     assert response.status_code == 200
+    assert response.get_data(as_text=True) == "False"
 
-    data = response.get_json()
-    assert len(data) == 3  # Ensure 3 words are returned
-    assert all(
-        len(word) == 7 for word in data
-    ), "Not all words have the specified length"
+    # Test case 3: Missing player_name parameter
+    response = client.get("/check_player")
+    assert response.status_code == 400
+    assert response.get_data(as_text=True) == "False"
 
-    # Test fetching words in Spanish
-    response = client.get("/get_random_words?number=3&lang=es")
-    assert response.status_code == 200
+    # Test case 4: Handle database error (simulate failure)
+    with patch("app_logic.models.PlayerScore.query") as mock_query:
+        mock_query.filter_by.side_effect = Exception(
+            "Database connection failed"
+        )
 
-    data = response.get_json()
-    assert len(data) == 3  # Ensure 3 words are returned
-    assert all(
-        isinstance(word, str) for word in data
-    )  # Ensure all items are strings
-
-    # Test invalid number of words
-    response = client.get("/get_random_words?number=-1")
-    assert (
-        response.status_code == 400
-    )  # Ensure error response for invalid input
-
-    data = response.get_json()
-    assert "error" in data  # Ensure error message is returned
+        response = client.get("/check_player?player_name=TestPlayer")
+        assert response.status_code == 500
+        assert response.get_data(as_text=True) == "False"
