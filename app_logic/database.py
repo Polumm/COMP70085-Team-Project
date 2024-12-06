@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime, timezone
 
-from app_logic.models import PlayerScore
+# from app_logic.models import PlayerScore
 
 
 # Initialize Flask extensions

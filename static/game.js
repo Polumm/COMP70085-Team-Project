@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     if (secretIndex == currentlyRevealedSecretIndex) {
                         // show for 1 sec then remove both cards without locking the board
+                        cardElement.querySelector('.flip-card-inner').classList.add('flipped');
                         const cardBack = cardElement.querySelector('.card-back');
                         cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
 
