@@ -98,16 +98,3 @@ jobs:
           TEST_FLASK_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
         run: |
           python -m pytest
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Deploy to Impaas
-        uses: /impaas/impaas-deploy@v3
-        with:
-          app-name: cs824-sse-app
-          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
-          method: PLATFORM
