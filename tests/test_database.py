@@ -111,3 +111,48 @@ def test_get_random_images(client):
     # Check that URLs are unique
     urls = [image["url"] for image in data]
     assert len(set(urls)) == len(urls), "Image URLs are not unique"
+
+
+def test_get_random_words(client):
+    """Test /get_random_words API with real API."""
+    # Test fetching 5 random words
+    response = client.get("/get_random_words?number=5")
+    assert response.status_code == 200
+
+    data = response.get_json()
+    assert len(data) == 5  # Ensure 5 words are returned
+    assert all(
+        isinstance(word, str) for word in data
+    )  # Ensure all items are strings
+
+    # Check that words are unique
+    assert len(set(data)) == len(data), "Returned words are not unique"
+
+    # Test fetching words with specific length
+    response = client.get("/get_random_words?number=3&length=7")
+    assert response.status_code == 200
+
+    data = response.get_json()
+    assert len(data) == 3  # Ensure 3 words are returned
+    assert all(
+        len(word) == 7 for word in data
+    ), "Not all words have the specified length"
+
+    # Test fetching words in Spanish
+    response = client.get("/get_random_words?number=3&lang=es")
+    assert response.status_code == 200
+
+    data = response.get_json()
+    assert len(data) == 3  # Ensure 3 words are returned
+    assert all(
+        isinstance(word, str) for word in data
+    )  # Ensure all items are strings
+
+    # Test invalid number of words
+    response = client.get("/get_random_words?number=-1")
+    assert (
+        response.status_code == 400
+    )  # Ensure error response for invalid input
+
+    data = response.get_json()
+    assert "error" in data  # Ensure error message is returned

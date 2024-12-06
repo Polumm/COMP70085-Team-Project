@@ -17,6 +17,7 @@ from app_logic.game_routes import (
 )
 from app_logic.page_routes import game, index, leaderboard
 from app_logic.fetch_image_routes import get_random_images
+from app_logic.fetch_word_routes import get_random_words
 
 
 frontend_apis = {
