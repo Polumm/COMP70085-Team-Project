@@ -113,3 +113,15 @@ def delete_game(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+
+
+# route(/submit_game/<game_id>/<player_name>)
+def submit_game(game_id: int | str, player_name: str):
+    try:
+        game_id = int(game_id)
+        game = games[game_id]
+        return game.submit_score(player_name)
+    except KeyError:
+        return jsonify({"error": "The game doesn't exist"}), 400
+    except ValueError:
+        return jsonify({"error": "The game id is invalid"}), 400
