@@ -10,8 +10,8 @@ from app_logic.models import db, PlayerScore
 # ==============================
 
 
-# @api.route("/leaderboard", methods=["GET"])
-def leaderboard():
+# @api.route("/fetch_leaderboard", methods=["GET"])
+def fetch_leaderboard():
     """
     Retrieve the leaderboard
     - Fetches the top 10 players based on the shortest completion time.
