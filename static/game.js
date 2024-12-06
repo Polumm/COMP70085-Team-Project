@@ -64,7 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card','flip-card');
                     // cardElement.classList.add('card');
+                    cardElement.classList.add('card','flip-card');
+                    // cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
+                    cardElement.innerHTML = `
+                        <div class="flip-card-inner">
+                            <div class="card-front"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    `;
                     cardElement.innerHTML = `
                         <div class="flip-card-inner">
                             <div class="card-front"></div>
@@ -116,6 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     // cardElement.innerHTML = `
                     //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
                     // `;
+                    cardElement.querySelector('.flip-card-inner').classList.add('flipped');
+                    const cardBack = cardElement.querySelector('.card-back');
+                    cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
+
+                    // cardElement.innerHTML = `
+                    //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                    // `;
 
                     return;
                 } else {
@@ -143,11 +158,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         // cardElement.innerHTML = `
                         //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
                         // `;
+                        cardElement.querySelector('.flip-card-inner').classList.add('flipped');
+                        const cardBack = cardElement.querySelector('.card-back');
+                        cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
+
+                        // cardElement.innerHTML = `
+                        //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        // `;
 
                         // lock the board, wait for 1 sec then flip both back
                         boardIsLocked = true;
                         const tempCard = currentlyRevealedCard;
                         setTimeout(() => {
+                            cardElement.querySelector('.flip-card-inner').classList.remove('flipped');
+                            cardBack.innerHTML = null;
+                            tempCard.querySelector('.flip-card-inner').classList.remove('flipped');
+                            tempCard.querySelector('.card-back').innerHTML = null;
                             cardElement.querySelector('.flip-card-inner').classList.remove('flipped');
                             cardBack.innerHTML = null;
                             tempCard.querySelector('.flip-card-inner').classList.remove('flipped');
