@@ -11,9 +11,9 @@ def test_submit_score(client):
     assert data["player_name"] == "Test Player"
 
 
-def test_leaderboard(client):
-    """Test the /leaderboard route."""
-    response = client.get("/leaderboard")
+def test_fetch_leaderboard(client):
+    """Test the /fetch_leaderboard route."""
+    response = client.get("/fetch_leaderboard")
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, list)
