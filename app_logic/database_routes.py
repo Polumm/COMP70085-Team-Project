@@ -1,8 +1,8 @@
 from flask import jsonify, request
 
-from datetime import datetime, timezone
 
-from app_logic.models import db, PlayerScore
+from app_logic.database import internal_submit_score
+from app_logic.models import PlayerScore
 
 
 # ==============================
@@ -69,18 +69,4 @@ def submit_score():
             }
         ), 400
 
-    try:
-        # Create a new player score entry
-        score = PlayerScore(
-            player_name=player_name,
-            completion_time=float(completion_time),
-            moves=moves,
-            created_at=datetime.now(timezone.utc),
-        )
-        db.session.add(score)
-        db.session.commit()
-
-        return jsonify(score.to_dict()), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Failed to submit score: {str(e)}"}), 500
+    return internal_submit_score(player_name, completion_time, moves)

@@ -1,11 +1,10 @@
 from collections.abc import MutableSequence
 from typing import Optional
 from random import shuffle
-import json
 from time import time
 
+from app_logic.database_routes import internal_submit_score
 from game_logic.card import Card
-from game_logic.json_encoder import GameEncoder
 
 
 class Game:
@@ -78,9 +77,6 @@ class Game:
     def __str__(self) -> str:
         return str([str(card) for card in self._cards])
 
-    def get_json_str(self) -> str:
-        return json.dumps(self, indent=4, cls=GameEncoder)
-
     def get_time(self) -> float:
         return 0.0 if self._time == 0.0 else time() - self._time
 
@@ -92,6 +88,9 @@ class Game:
 
     def detect_finished(self) -> bool:
         return all(card is None for card in self._cards)
+
+    def submit_score(self, player_name="DefaultName"):
+        return internal_submit_score(player_name, self._time, self._flip_count)
 
     # This method is only for testing purposes
     def force_reveal(self, target: int):

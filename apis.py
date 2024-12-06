@@ -13,6 +13,7 @@ from app_logic.game_routes import (
     reset_game,
     delete_game,
     detect_game_finish,
+    submit_game,
 )
 from app_logic.page_routes import game, index, leaderboard
 from app_logic.fetch_image_routes import get_random_images
@@ -37,11 +38,12 @@ game_apis = {
     "/create_game/<num_pairs>": (create_game, ["POST"]),
     "/create_default_game": (create_default_game, ["POST"]),
     "/flip/<game_id>/<card_index>": (flip, ["POST"]),
-    "/get_time/<num_pairs>": (get_time, ["GET"]),
-    "/get_flip_count/<num_pairs>": (get_flip_count, ["GET"]),
-    "/reset_game/<num_pairs>": (reset_game, ["POST"]),
-    "/delete_game/<num_pairs>": (delete_game, ["POST"]),
-    "/detect_game_finish/<num_pairs>": (detect_game_finish, ["GET"]),
+    "/get_time/<game_id>": (get_time, ["GET"]),
+    "/get_flip_count/<game_id>": (get_flip_count, ["GET"]),
+    "/reset_game/<game_id>": (reset_game, ["POST"]),
+    "/delete_game/<game_id>": (delete_game, ["POST"]),
+    "/detect_game_finish/<game_id>": (detect_game_finish, ["GET"]),
+    "/submit_game/<game_id>": (submit_game, ["GET"]),
 }
 
 
