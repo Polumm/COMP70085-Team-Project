@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function flipCard(cardElement) {
         if (boardIsLocked) return;
 
-        moves++; // 增加翻牌次数
-        updateMoveCounter(moves); // 更新翻牌计数显示
+        moves++; // Increment the number of card flips
+        updateMoveCounter(moves); // Update the card flip counter display
 
         // Call API to check if cards match
         try {
@@ -163,18 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function submitGame(gameId) {
     try {
-        // 设置固定的玩家姓名
         const playerName = "default_name";
 
-        // 构建 API URL
         const apiUrl = `/submit_game/${gameId}/${playerName}`;
 
-        // 使用 fetch 发起请求
-        const response = await fetch(apiUrl, {
-            method: 'GET', // 修改为实际后端需要的 HTTP 方法
-        });
+        const response = await fetch(apiUrl, {method: 'GET',});
 
-        // 检查响应是否成功
         if (response.ok) {
             const data = await response.json();
             console.log("Game submitted successfully:", data);
