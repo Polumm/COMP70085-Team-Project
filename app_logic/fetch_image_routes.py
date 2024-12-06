@@ -13,7 +13,7 @@ DUCK_API_BASE_URL = "https://random-d.uk/api"
 
 async def fetch_image(session):
     """
-    Fetch a single image from the Likepoems API.
+    Fetch a single image from the Duck API.
     - Makes an HTTP GET request to the API to retrieve a random image.
 
     Returns:

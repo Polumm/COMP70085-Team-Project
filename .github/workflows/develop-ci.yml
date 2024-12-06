@@ -6,8 +6,8 @@ on:
       - develop
 
 env:
-  TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
-  FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
+  TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+  TEST_FLASK_DB_URL: ${{ secrets.TEST_FLASK_DB_URL }}
 
 jobs:
   setup:
@@ -24,9 +24,6 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
-        env:
-          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
-          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
@@ -43,16 +40,13 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
-        env:
-          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
-          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
       - name: Run Unit Tests
         env:
-          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
-          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
+          TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+          TEST_FLASK_DB_URL: ${{ secrets.TEST_FLASK_DB_URL }}
         run: python -m pytest
 
   deploy:
@@ -68,9 +62,6 @@ jobs:
           python-version: 3.12
 
       - name: Install Dependencies
-        env:
-          TARGET_DB_URL: ${{ secrets.TARGET_DB_URL }}
-          FLASK_DB_URL: ${{ secrets.FLASK_DB_URL }}
         run: |
           pip install -r requirements.txt
 
