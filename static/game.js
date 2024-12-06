@@ -63,8 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const card = cards[cardIndex];
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card','flip-card');
-                    // cardElement.classList.add('card');
-                    cardElement.classList.add('card','flip-card');
                     cardElement.dataset.index = cardIndex;
                     cardElement.innerHTML = `
                         <div class="flip-card-inner">
