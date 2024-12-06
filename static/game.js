@@ -70,12 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="card-back"></div>
                         </div>
                     `;
-                    cardElement.innerHTML = `
-                        <div class="flip-card-inner">
-                            <div class="card-front"></div>
-                            <div class="card-back"></div>
-                        </div>
-                    `;
                     cardElement.addEventListener('click', () => flipCard(cardElement));
                     rowElement.appendChild(cardElement);
                     cardIndex++;
