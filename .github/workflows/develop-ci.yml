@@ -55,16 +55,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Deploy to Impaas
         uses: /impaas/impaas-deploy@v3
         with:
