@@ -27,6 +27,8 @@ def create_game(num_pairs: int | str):
         db.session.add(layout)
         db.session.commit()
 
+        games[game_id] = game
+
         return jsonify(game_id), 201
     except Exception as e:
         db.session.rollback()
