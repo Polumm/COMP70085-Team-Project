@@ -1,10 +1,8 @@
 from flask import jsonify
 
-from datetime import datetime, timezone
 
 from game_logic.game_state import Game, games
 from app_logic.database import db
-from app_logic.models import CardLayout
 
 
 # route("/create_game/<num_pairs>", methods=["POST"])
@@ -21,11 +19,6 @@ def create_game(num_pairs: int | str):
         num_pairs = int(num_pairs)
         game = Game(num_pairs)
         game_id = id(game)
-
-        # Save the layout in the database
-        # layout = CardLayout(layout=None, created_at=datetime.now(timezone.utc))
-        # db.session.add(layout)
-        # db.session.commit()
 
         games[game_id] = game
 
