@@ -1,18 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     const gameBoard = document.getElementById('game-board');
+    const timer = document.getElementById('timer');
+    const moveCounter = document.getElementById('move-counter');
     let gameId = null;
-    let lockBoard = false;
+    let boardIsLocked = false;
     let startTime = null;
-    let moves = 0;
+    let moves = null;
+    let images = null;
 
-    window.startGame = async function () {
+    let currentlyRevealedSecretIndex = null;
+    let currentlyRevealedCard = null;
+
+    window.startGame = async function() {
+        moves = 0;
         try {
             // 固定卡牌数量为 10 对（20 张卡片）
             const numPairs = 10;
             const totalCards = numPairs * 2;
 
             // 调用 API 创建新游戏
-            const response = await fetch(`/create_default_game`, { method: 'POST' });
+            let url = null;
+            if (gameId != null) {
+                url = `/reset_game/${gameId}`;
+            } else {
+                url = "/create_default_game";
+            }
+            const response = await fetch(url, { method: 'POST' });
+            // const response = await fetch(`/create_game/2`, { method: 'POST' });
             if (!response.ok) {
                 throw new Error('Failed to create game');
             }
@@ -21,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 重置游戏状态
             gameBoard.innerHTML = '';
-            lockBoard = false;
+            boardIsLocked = false;
             moves = 0;
             startTime = Date.now();
 
@@ -30,23 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!imageResponse.ok) {
                 throw new Error('Failed to fetch images');
             }
-            const images = await imageResponse.json();
+            images = await imageResponse.json();
 
             // 生成游戏卡片
             let cards = generateCardArray(numPairs);
-            cards = shuffle(cards);
+            // cards = shuffle(cards);
 
-            // 固定生成 5 行 4 列的卡片布局
-            const rows = 5;
-            const cols = 4;
+            // 固定生成 4 行 5 列的卡片布局
+            const rows = 4;
+            const cols = 5;
             let cardIndex = 0;
 
             for (let row = 0; row < rows; row++) {
                 const rowElement = document.createElement('div');
                 rowElement.classList.add('row');
-                rowElement.style.display = 'flex';
-                rowElement.style.justifyContent = 'center';
-                rowElement.style.marginBottom = '15px';
+                // rowElement.style.display = 'flex';
+                // rowElement.style.justifyContent = 'center';
+                // rowElement.style.marginBottom = '15px';
 
                 for (let col = 0; col < cols; col++) {
                     if (cardIndex >= totalCards) break;
@@ -54,13 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
-                    cardElement.style.width = '80px';
-                    cardElement.style.height = '120px';
-                    cardElement.style.margin = '10px';
-                    cardElement.innerHTML = `
-                        <div class="card-back"></div>
-                        <div class="card-front"><img src="${images[card - 1].url}" alt="Card Image"></div>
-                    `;
                     cardElement.addEventListener('click', () => flipCard(cardElement));
                     rowElement.appendChild(cardElement);
                     cardIndex++;
@@ -74,12 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function flipCard(cardElement) {
-        if (lockBoard || cardElement.classList.contains('flipped')) return;
-
-        // 显示翻转的卡片
-        cardElement.classList.add('flipped');
-        lockBoard = true;
-        moves++;
+        // if (lockBoard || cardElement.classList.contains('flipped')) return;
+        //
+        // // 显示翻转的卡片
+        // cardElement.classList.add('flipped');
+        // lockBoard = true;
+        // moves++;
+        if (boardIsLocked)
+            return;
 
         // 调用 API 检查卡片是否匹配
         try {
@@ -87,43 +96,62 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/flip/${gameId}/${cardIndex}`, {
                 method: 'POST',
             });
-            const result = await response.json();
+            const secretIndex = await response.json();
 
-            if (result === -1) {
-                // 如果返回 -1，翻牌无效，翻回去
-                setTimeout(() => {
-                    cardElement.classList.remove('flipped');
-                    lockBoard = false;
-                }, 1000);
+            // flipping process failed
+            if (secretIndex == -1) {
+                return;
             } else {
-                // 如果返回有效的 secret_index，说明匹配成功或需要移除卡片
-                const secretIndex = result;
+                if (currentlyRevealedSecretIndex == null) {
+                    currentlyRevealedSecretIndex = secretIndex;
+                    currentlyRevealedCard = cardElement;
+                    // animate the flipping process here
+                    cardElement.innerHTML = `
+                        <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                    `;
 
-                // 找到所有和该 secret_index 匹配的卡片
-                const matchingCards = document.querySelectorAll(`.card[data-value="${secretIndex}"]`);
-
-                if (matchingCards.length === 2) {
-                    // 如果找到两张卡片，移除它们
-                    setTimeout(() => {
-                        matchingCards.forEach(card => card.remove());
-                        lockBoard = false;
-
-                        // 检查游戏是否结束
-                        if (document.querySelectorAll('.card').length === 0) {
-                            setTimeout(submitScore, 500); // 所有卡片匹配成功后提交分数
-                        }
-                    }, 500);
+                    return;
                 } else {
-                    // 如果有问题（例如没有两张卡片），解锁牌板（防止卡住）
-                    lockBoard = false;
+                    if (secretIndex == currentlyRevealedSecretIndex) {
+                        // show for 1 sec then remove both cards without locking the board
+                        cardElement.innerHTML = `
+                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        `;
+                        const tempCard = currentlyRevealedCard;
+                        setTimeout(() => {
+                            // tempCard.innerHTML = null;
+                            // cardElement.innerHTML = null;
+                            tempCard.style.opacity = 0.0;
+                            cardElement.style.opacity = 0.0;
+                        }, 1000);
+                    } else {
+                        currentlyRevealedSecretIndex = null;
+
+                        // animate the flipping process here
+                        cardElement.innerHTML = `
+                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        `;
+
+                        // lock the board, wait for 1 sec then flip both back
+                        boardIsLocked = true;
+                        const tempCard = currentlyRevealedCard;
+                        setTimeout(() => {
+                            cardElement.innerHTML = null;
+                            tempCard.innerHTML = null;
+                            boardIsLocked = false;
+                        }, 1000);
+                    }
+                    currentlyRevealedSecretIndex = null;
+                    currentlyRevealedCard = null;
                 }
             }
         } catch (error) {
             console.error('Failed to flip the card:', error);
-            setTimeout(() => {
-                cardElement.classList.remove('flipped');
-                lockBoard = false;
-            }, 1000);
+            // setTimeout(() => {
+            //     cardElement.classList.remove('flipped');
+            //     boardIsLocked = false;
+            // }, 1000);
+            return;
         }
     }
 
