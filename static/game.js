@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameBoard.appendChild(rowElement);
             }
             // Set the timer and move counter to be visible
-            document.getElementById('timer').style.opacity = 1; 
-            document.getElementById('move-counter').style.opacity = 1;           
+            document.getElementById('timer').style.opacity = 1;
+            document.getElementById('move-counter').style.opacity = 1;
 
         } catch (error) {
             console.error('Error starting the game:', error);
@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function flipCard(cardElement) {
         if (boardIsLocked) return;
+
+        moves++; // 增加翻牌次数
+        updateMoveCounter(moves); // 更新翻牌计数显示
 
         // Call API to check if cards match
         try {
@@ -141,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentlyRevealedSecretIndex = null;
                     currentlyRevealedCard = null;
                 }
-                moves++; // Increase the number of moves
-                updateMoveCounter(moves); // Update move counter directly
+
             }
         } catch (error) {
             console.error('Failed to flip the card:', error);
@@ -159,37 +161,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function submitScore() {
+async function submitGame(gameId) {
     try {
-        const completionTime = (Date.now() - startTime) / 1000;
-        const playerName = prompt("Enter your name:");
+        // 设置固定的玩家姓名
+        const playerName = "default_name";
 
-        const requestData = {
-            player_name: playerName,
-            completion_time: completionTime,
-            moves: moves,
-        };
+        // 构建 API URL
+        const apiUrl = `/submit_game/${gameId}/${playerName}`;
 
-        const response = await fetch('/submit_score', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestData),
+        // 使用 fetch 发起请求
+        const response = await fetch(apiUrl, {
+            method: 'GET', // 修改为实际后端需要的 HTTP 方法
         });
 
+        // 检查响应是否成功
         if (response.ok) {
             const data = await response.json();
-            alert('Score submitted successfully!');
+            console.log("Game submitted successfully:", data);
+            alert("Game submitted successfully!");
         } else {
             const errorData = await response.json();
-            alert('Error: ' + errorData.error);
+            console.error("Error submitting game:", errorData);
+            alert(`Error: ${errorData.error}`);
         }
     } catch (error) {
-        console.error('Error submitting score:', error);
-        alert('An error occurred while submitting the score. Please try again later.');
+        console.error("Network error or API call failed:", error);
+        alert("An error occurred while submitting the game. Please try again later.");
     }
 }
+
+
 
 async function getTime() {
     try {
