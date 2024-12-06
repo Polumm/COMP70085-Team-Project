@@ -1,40 +1,6 @@
-from sqlalchemy.dialects.postgresql import JSONB
-
 from datetime import datetime, timezone
 
 from app_logic.database import db
-
-
-class CardLayout(db.Model):
-    """Model for storing game card layouts."""
-
-    __tablename__ = "card_layouts"
-    id = db.Column(db.Integer, primary_key=True)  # Unique identifier
-    layout = db.Column(JSONB, nullable=False)  # Card layout stored as JSONB
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), index=True
-    )  # Timestamp when the layout is created
-
-    def to_dict(self):
-        """Convert model instance to dictionary for serialization."""
-        return {
-            "id": self.id,
-            "layout": self.layout,
-            "created_at": self.created_at.isoformat(),
-        }
-
-    @staticmethod
-    def validate_layout(layout):
-        """
-        Validate the layout structure before saving.
-        :param layout: List of card layout data.
-        :return: Validated layout.
-        """
-        if not isinstance(layout, list):
-            raise ValueError("Layout must be a list.")
-        if len(layout) % 2 != 0:
-            raise ValueError("Layout must contain an even number of cards.")
-        return layout
 
 
 class PlayerScore(db.Model):
