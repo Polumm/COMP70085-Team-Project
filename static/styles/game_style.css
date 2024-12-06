@@ -62,20 +62,13 @@ body {
 }
 
 .card-back {
-  /* width: 20vw; */
+  position: absolute;
   width: 100%;
   height: 100%;
-  /* 默认宽度占据视口宽度的 20% */
-  /* aspect-ratio: 4 / 5; */
-  /* 保持宽高比为 4:5 */
-  background: #ccc;
-  /* 默认背景色 */
   border-radius: 10px;
-  /* 圆角效果 */
   overflow: hidden;
-  /* 确保图片裁剪 */
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
-  /* 添加阴影效果 */
+  z-index: 2;
+  backface-visibility: hidden;
   transform: rotateY(180deg);
 }
 
@@ -89,18 +82,20 @@ body {
   display: block;
 }
 
-.card.front {
-  background: #fdbb2d;
-  position: absolute;
+.card-front {
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  color: #1a2a6c;
-  backface-visibility: hidden;
-  opacity: 1;
+  background-image: url("../img/cardback.jpg"); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Flip card styles */
@@ -135,13 +130,12 @@ body {
   backface-visibility: hidden;
 }
 
-.card.front, .card-back {
+.card-front, .card-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
 }
-
 
 .flip-card-back {
   background-color: #2980b9;
