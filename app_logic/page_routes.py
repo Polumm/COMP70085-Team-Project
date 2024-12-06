@@ -9,3 +9,8 @@ def index():
 # @api.route("/game")
 def game():
     return render_template("game.html")
+
+
+# @api.route("/leaderboard")
+def leaderboard():
+    return render_template("leaderboard.html")
