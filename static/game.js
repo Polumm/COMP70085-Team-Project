@@ -1,27 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     const gameBoard = document.getElementById('game-board');
-    let game_id = null;
-    let lockBoard = false;
+    const timer = document.getElementById('timer');
+    const moveCounter = document.getElementById('move-counter');
+    let gameId = null;
+    let boardIsLocked = false;
     let startTime = null;
-    let moves = 0;
+    let moves = null;
+    let images = null;
 
-    window.startGame = async function() {
+    let currentlyRevealedSecretIndex = null;
+    let currentlyRevealedCard = null;
+
+    window.startGame = async function () {
+        moves = 0;
         try {
-            // 生成一个 4 到 20 之间的随机对数
-            const numPairs = Math.floor(Math.random() * 17) + 4;
+            // 固定卡牌数量为 10 对（20 张卡片）
+            const numPairs = 10;
             const totalCards = numPairs * 2;
 
             // 调用 API 创建新游戏
-            const response = await fetch(`/create_game/${numPairs}`, { method: 'POST' });
+            let url = null;
+            if (gameId != null) {
+                url = `/reset_game/${gameId}`;
+            } else {
+                url = "/create_default_game";
+            }
+            const response = await fetch(url, { method: 'POST' });
+            // const response = await fetch(`/create_game/2`, { method: 'POST' });
             if (!response.ok) {
                 throw new Error('Failed to create game');
             }
             const newGameId = await response.json();
-            game_id = newGameId;
+            gameId = newGameId;
 
             // 重置游戏状态
             gameBoard.innerHTML = '';
-            lockBoard = false;
+            boardIsLocked = false;
             moves = 0;
             startTime = Date.now();
 
@@ -30,31 +44,59 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!imageResponse.ok) {
                 throw new Error('Failed to fetch images');
             }
+<<<<<<< HEAD
+            images = await imageResponse.json();
+
+            // 生成游戏卡片
+            let cards = generateCardArray(numPairs);
+            // cards = shuffle(cards);
+
+            // 固定生成 4 行 5 列的卡片布局
+            const rows = 4;
+            const cols = 5;
+=======
             const images = await imageResponse.json();
 
             // 生成游戏卡片
             let cards = generateCardArray(numPairs);
             cards = shuffle(cards);
 
-            // 动态生成卡片布局
-            const rows = Math.floor(Math.sqrt(totalCards));
-            const cols = Math.ceil(totalCards / rows);
+            // 固定生成 5 行 4 列的卡片布局
+            const rows = 5;
+            const cols = 4;
+>>>>>>> a1f6d2f (1202)
             let cardIndex = 0;
 
             for (let row = 0; row < rows; row++) {
                 const rowElement = document.createElement('div');
                 rowElement.classList.add('row');
+<<<<<<< HEAD
+                // rowElement.style.display = 'flex';
+                // rowElement.style.justifyContent = 'center';
+                // rowElement.style.marginBottom = '15px';
 
+=======
+                rowElement.style.display = 'flex';
+                rowElement.style.justifyContent = 'center';
+                rowElement.style.marginBottom = '15px';
+
+>>>>>>> a1f6d2f (1202)
                 for (let col = 0; col < cols; col++) {
                     if (cardIndex >= totalCards) break;
                     const card = cards[cardIndex];
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
+<<<<<<< HEAD
+=======
+                    cardElement.style.width = '80px';
+                    cardElement.style.height = '120px';
+                    cardElement.style.margin = '10px';
                     cardElement.innerHTML = `
                         <div class="card-back"></div>
                         <div class="card-front"><img src="${images[card - 1].url}" alt="Card Image"></div>
                     `;
+>>>>>>> a1f6d2f (1202)
                     cardElement.addEventListener('click', () => flipCard(cardElement));
                     rowElement.appendChild(cardElement);
                     cardIndex++;
@@ -68,44 +110,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function flipCard(cardElement) {
-        if (lockBoard || cardElement.classList.contains('flipped')) return;
-
-        // 显示翻转的卡片
-        cardElement.classList.add('flipped');
-        lockBoard = true;
-        moves++;
+        // if (lockBoard || cardElement.classList.contains('flipped')) return;
+        //
+        // // 显示翻转的卡片
+        // cardElement.classList.add('flipped');
+        // lockBoard = true;
+        // moves++;
+        if (boardIsLocked)
+            return;
 
         // 调用 API 检查卡片是否匹配
         try {
             const cardIndex = cardElement.dataset.index;
-            const response = await fetch(`/flip/${game_id}/${cardIndex}`, {
+            const response = await fetch(`/flip/${gameId}/${cardIndex}`, {
                 method: 'POST',
             });
-            const result = await response.json();
+            const secretIndex = await response.json();
 
-            if (result.matched) {
-                // 如果匹配成功，保持卡片翻开状态
-                lockBoard = false;
-                if (document.querySelectorAll('.card.flipped').length === numPairs * 2) {
-                    setTimeout(submitScore, 500); // 所有卡片匹配成功后提交分数
-                }
+            // flipping process failed
+            if (secretIndex == -1) {
+                return;
             } else {
-                // 如果匹配失败，将卡片翻回去
-                setTimeout(() => {
-                    cardElement.classList.remove('flipped');
-                    const firstFlippedCard = document.querySelector('.card.flipped:not([data-index="' + cardIndex + '"])');
-                    if (firstFlippedCard) {
-                        firstFlippedCard.classList.remove('flipped');
+                if (currentlyRevealedSecretIndex == null) {
+                    currentlyRevealedSecretIndex = secretIndex;
+                    currentlyRevealedCard = cardElement;
+                    // animate the flipping process here
+                    cardElement.innerHTML = `
+                        <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                    `;
+
+                    return;
+                } else {
+                    if (secretIndex == currentlyRevealedSecretIndex) {
+                        // show for 1 sec then remove both cards without locking the board
+                        cardElement.innerHTML = `
+                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        `;
+                        const tempCard = currentlyRevealedCard;
+                        setTimeout(() => {
+                            // tempCard.innerHTML = null;
+                            // cardElement.innerHTML = null;
+                            tempCard.style.opacity = 0.0;
+                            cardElement.style.opacity = 0.0;
+                        }, 1000);
+                    } else {
+                        currentlyRevealedSecretIndex = null;
+
+                        // animate the flipping process here
+                        cardElement.innerHTML = `
+                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        `;
+
+                        // lock the board, wait for 1 sec then flip both back
+                        boardIsLocked = true;
+                        const tempCard = currentlyRevealedCard;
+                        setTimeout(() => {
+                            cardElement.innerHTML = null;
+                            tempCard.innerHTML = null;
+                            boardIsLocked = false;
+                        }, 1000);
                     }
-                    lockBoard = false;
-                }, 1000);
+                    currentlyRevealedSecretIndex = null;
+                    currentlyRevealedCard = null;
+                }
             }
         } catch (error) {
             console.error('Failed to flip the card:', error);
-            setTimeout(() => {
-                cardElement.classList.remove('flipped');
-                lockBoard = false;
-            }, 1000);
+            // setTimeout(() => {
+            //     cardElement.classList.remove('flipped');
+            //     boardIsLocked = false;
+            // }, 1000);
+            return;
         }
     }
 
@@ -143,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function getTime() {
         try {
-            const response = await fetch(`/get_time/${game_id}`);
+            const response = await fetch(`/get_time/${gameId}`);
             if (response.ok) {
                 const time = await response.json();
                 console.log('Game time:', time);
@@ -157,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function getFlipCount() {
         try {
-            const response = await fetch(`/get_flip_count/${game_id}`);
+            const response = await fetch(`/get_flip_count/${gameId}`);
             if (response.ok) {
                 const flipCount = await response.json();
                 console.log('Flip count:', flipCount);
@@ -171,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function resetGame() {
         try {
-            const response = await fetch(`/reset_game/${game_id}`, { method: 'POST' });
+            const response = await fetch(`/reset_game/${gameId}`, { method: 'POST' });
             if (response.ok) {
                 console.log('Game has been reset');
                 startGame(); // 重新开始游戏
@@ -185,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function detectGameFinish() {
         try {
-            const response = await fetch(`/detect_game_finish/${game_id}`);
+            const response = await fetch(`/detect_game_finish/${gameId}`);
             if (response.ok) {
                 const finished = await response.json();
                 if (finished) {
@@ -201,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function deleteGame() {
         try {
-            const response = await fetch(`/delete_game/${game_id}`, { method: 'DELETE' });
+            const response = await fetch(`/delete_game/${gameId}`, { method: 'DELETE' });
             if (response.ok) {
                 console.log('Game deleted successfully');
-                game_id = null;
+                gameId = null;
                 gameBoard.innerHTML = '';
             } else {
                 console.error('Failed to delete game');
