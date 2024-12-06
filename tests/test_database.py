@@ -57,7 +57,7 @@ def test_fetch_leaderboard(client):
 
 
 def test_leaderboard_order_and_limit(client, app):
-    """Ensure leaderboard is ordered by completion_time and limited nums."""
+    """Ensure leaderboard is ordered by completion_time and limited to 10 entries."""
     # Add multiple entries
     with app.app_context():
         from app_logic.models import PlayerScore, db
@@ -81,7 +81,7 @@ def test_leaderboard_order_and_limit(client, app):
 
     assert len(data) == 10  # Limit to top 10 entries
     times = [entry["completion_time"] for entry in data]
-    assert times == sorted(times)  # Ensure correct order
+    assert times == sorted(times)  # Ensure ordered by shortest time
 
 
 def test_empty_leaderboard(client, app):
