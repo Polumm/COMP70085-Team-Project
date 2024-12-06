@@ -62,8 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (cardIndex >= totalCards) break;
                     const card = cards[cardIndex];
                     const cardElement = document.createElement('div');
-                    cardElement.classList.add('card');
+                    cardElement.classList.add('card','flip-card');
+                    // cardElement.classList.add('card');
                     cardElement.dataset.index = cardIndex;
+                    cardElement.innerHTML = `
+                        <div class="flip-card-inner">
+                            <div class="card-front"></div>
+                            <div class="card-back"></div>
+                        </div>
+                    `;
                     cardElement.addEventListener('click', () => flipCard(cardElement));
                     rowElement.appendChild(cardElement);
                     cardIndex++;
@@ -102,17 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentlyRevealedSecretIndex = secretIndex;
                     currentlyRevealedCard = cardElement;
                     // animate the flipping process here
-                    cardElement.innerHTML = `
-                        <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
-                    `;
+                    cardElement.querySelector('.flip-card-inner').classList.add('flipped');
+                    const cardBack = cardElement.querySelector('.card-back');
+                    cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
+
+                    // cardElement.innerHTML = `
+                    //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                    // `;
 
                     return;
                 } else {
                     if (secretIndex == currentlyRevealedSecretIndex) {
                         // show for 1 sec then remove both cards without locking the board
-                        cardElement.innerHTML = `
-                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
-                        `;
+                        const cardBack = cardElement.querySelector('.card-back');
+                        cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
+
                         const tempCard = currentlyRevealedCard;
                         setTimeout(() => {
                             // tempCard.innerHTML = null;
@@ -124,16 +135,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         currentlyRevealedSecretIndex = null;
 
                         // animate the flipping process here
-                        cardElement.innerHTML = `
-                            <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
-                        `;
+                        cardElement.querySelector('.flip-card-inner').classList.add('flipped');
+                        const cardBack = cardElement.querySelector('.card-back');
+                        cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
+
+                        // cardElement.innerHTML = `
+                        //     <div class="card-back"><img src=${images[secretIndex]["url"]}></div>
+                        // `;
 
                         // lock the board, wait for 1 sec then flip both back
                         boardIsLocked = true;
                         const tempCard = currentlyRevealedCard;
                         setTimeout(() => {
-                            cardElement.innerHTML = null;
-                            tempCard.innerHTML = null;
+                            cardElement.querySelector('.flip-card-inner').classList.remove('flipped');
+                            cardBack.innerHTML = null;
+                            tempCard.querySelector('.flip-card-inner').classList.remove('flipped');
+                            tempCard.querySelector('.card-back').innerHTML = null;
                             boardIsLocked = false;
                         }, 1000);
                     }
