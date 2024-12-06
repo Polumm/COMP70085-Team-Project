@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from app_logic.database_routes import (
-    leaderboard,
+    fetch_leaderboard,
     submit_score,
 )
 from app_logic.game_routes import (
@@ -14,17 +14,18 @@ from app_logic.game_routes import (
     delete_game,
     detect_game_finish,
 )
-from app_logic.page_routes import game, index
+from app_logic.page_routes import game, index, leaderboard
 from app_logic.fetch_image_routes import get_random_images
 
 
 frontend_apis = {
     "/": (index, ["GET"]),
     "/game": (game, ["GET"]),
+    "/leaderboard": (leaderboard, ["GET"]),
 }
 
 database_apis = {
-    "/leaderboard": (leaderboard, ["GET"]),
+    "/fetch_leaderboard": (fetch_leaderboard, ["GET"]),
     "/submit_score": (submit_score, ["POST"]),
 }
 
