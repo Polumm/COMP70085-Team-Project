@@ -1,26 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlipMatch Adventure</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/game_style.css') }}"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlipMatch Adventure</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/game_style.css') }}" />
-</head>
-
-<body>
-  <div class="container">
-    <div class="title">FlipMatch Adventure</div>
-    <div class="score-panel">
-      <p>Match all the cards as quickly as you can!</p>
-      <button onclick="startGame()">Start New Game</button>
+  <body>
+    <div class="container">
+      <div class="title">FlipMatch Adventure</div>
+      <div class="scoreboard">
+        <div class="counter" id="timer">
+          <p>Time:</p>
+        </div>
+        <div class="description-and-button">
+          <p>Match all the cards as quickly as you can!</p>
+          <button onclick="startGame()">Start New Game</button>
+        </div>
+        <div class="counter" id="move-counter">
+          <p>Moves:</p>
+        </div>
+      </div>
+      <div class="game-board" id="game-board"></div>
     </div>
-    <div class="game-board" id="game-board">
-    </div>
-  </div>
 
-  <script src="{{ url_for('static', filename='game.js') }}"></script>
-</body>
-
+    <script src="{{ url_for('static', filename='game.js') }}"></script>
+  </body>
 </html>
