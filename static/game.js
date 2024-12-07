@@ -143,20 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         const tempCard = currentlyRevealedCard;
                         setTimeout(() => {
                             cardElement.querySelector('.flip-card-inner').classList.remove('flipped');
-                            cardBack.innerHTML = null;
                             tempCard.querySelector('.flip-card-inner').classList.remove('flipped');
-                            tempCard.querySelector('.card-back').innerHTML = null;
-                            cardElement.querySelector('.flip-card-inner').classList.remove('flipped');
-                            cardBack.innerHTML = null;
-                            tempCard.querySelector('.flip-card-inner').classList.remove('flipped');
-                            tempCard.querySelector('.card-back').innerHTML = null;
                             boardIsLocked = false;
                         }, 1000);
                     }
                     currentlyRevealedSecretIndex = null;
                     currentlyRevealedCard = null;
                 }
-
             }
         } catch (error) {
             console.error('Failed to flip the card:', error);
