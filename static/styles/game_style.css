@@ -48,6 +48,14 @@ body {
   grid-template-columns: repeat(8, 1fr);
 }
 
+.counter {
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0; 
+  margin: 10px;
+}
+
+
 .card {
   width: 80px;
   height: 120px;
@@ -182,9 +190,4 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-}
-
-.counter {
-  font-size: 40px;
-  opacity: 0;
 }
