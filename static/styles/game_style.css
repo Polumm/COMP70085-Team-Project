@@ -14,7 +14,8 @@ body {
 
 .container {
   width: 95%;
-  max-width: 1000px;
+  max-height: 100vh;
+  max-width: 100vw;
   background: rgba(0, 0, 0, 0.7);
   border-radius: 15px;
   padding: 20px;
@@ -22,6 +23,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: scroll;
 }
 
 .title {
@@ -51,10 +53,70 @@ body {
 .counter {
   font-size: 20px;
   font-weight: bold;
-  opacity: 0; 
+  opacity: 0;
   margin: 10px;
 }
 
+/* Name-entry section */
+.name-entry {
+  display: flex;
+  flex-direction: column; /* Arrange items vertically */
+  align-items: center; /* Center elements horizontally */
+  margin-top: 20px; /* Add spacing above */
+  width: 100%; /* Make it responsive */
+  text-align: center; /* Align text within the section */
+}
+
+/* Name-entry label */
+.name-entry label {
+  font-size: 1.2em;
+  margin-bottom: 10px; /* Space between label and input */
+}
+
+/* Name-entry input field */
+.name-entry input {
+  width: 300px; /* Adjust input width */
+  padding: 10px; /* Add padding for better appearance */
+  font-size: 16px; /* Font size */
+  text-align: center; /* Center text in the input */
+  border: 1px solid #ffffff; /* Border for better visibility */
+  border-radius: 5px; /* Rounded corners */
+  margin-bottom: 20px; /* Space between input and button */
+}
+
+/* Name-entry button */
+.name-entry button.button {
+  margin-top: 20px;
+  background: #fdbb2d;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: 700;
+  color: #1a2a6c;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  text-align: center; /* Ensure the button text is centered */
+}
+
+/* Hover state for the button */
+.name-entry button.button:hover {
+  background-color: #ffc75f;
+}
+
+/* Name error message */
+#name-error {
+  margin-top: 10px; /* Space above the error message */
+  color: red; /* Error message color */
+  text-align: center;
+}
+
+/* Name empty message */
+#name-error {
+  margin-top: 10px; /* Space above the error message */
+  color: red; /* Error message color */
+  text-align: center;
+}
 
 .card {
   width: 80px;
@@ -131,14 +193,16 @@ body {
   transform: rotateY(180deg);
 }
 
-.flip-card-front, .flip-card-back {
+.flip-card-front,
+.flip-card-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
 }
 
-.card-front, .card-back {
+.card-front,
+.card-back {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -190,4 +254,9 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+
+#timer {
+  opacity: 1; /* Ensure it's visible */
+  display: block; /* Ensure it is not hidden */
 }

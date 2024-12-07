@@ -276,3 +276,31 @@ async function deleteGame() {
         console.error('Error deleting game:', error);
     }
 }
+
+// Event listener for "Enter Name" button
+document.getElementById("enter-name-btn").addEventListener("click", function () {
+    const usernameInput = document.getElementById("username");
+    const username = usernameInput.value.trim();
+  
+    // Check if the username is empty
+    if (!username) {
+      document.getElementById("name-empty").style.display = "block";
+      return;
+    }
+  
+    // Hide the name entry section
+    document.getElementById("name-entry").style.display = "none";
+  
+    // Display the game interface with the username
+    document.getElementById("game-interface").style.display = "block";
+    document.getElementById("user-name-display").textContent = username;
+  
+    // Optionally, you can store the username in local storage for use in other parts of the game
+    localStorage.setItem("username", username);
+  });
+  
+  // Placeholder function for starting the game
+  function startGame() {
+    alert("Game Started!");
+    // Your game logic goes here
+  }
