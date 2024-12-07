@@ -2,7 +2,7 @@
 async function fetchLeaderboard() {
     try {
         // 发起请求获取排行榜数据
-        const response = await fetch('http://localhost:8000/leaderboard'); 
+        const response = await fetch("/fetch_leaderboard");
         const data = await response.json();
         const leaderboardContainer = document.getElementById('leaderboard');
 
