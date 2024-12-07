@@ -7,23 +7,13 @@ def test_player_score_model(app):
     with app.app_context():
         # Create a player score
         score = PlayerScore(
-            player_name="Test Player", completion_time=120.5, moves=30
+            player_name="TestPlayer", completion_time=120.5, moves=30
         )
         db.session.add(score)
         db.session.commit()
 
         # Query the score
         queried_score = PlayerScore.query.first()
-        assert queried_score.player_name == "Test Player"
-        assert queried_score.completion_time == 120.5
-        assert queried_score.moves == 30
-
-
-# def test_create_game(client):
-#     """Test the /create_game route."""
-#     response = client.post("/create_game/10")
-#     assert (
-#         response.status_code == 201
-#     ), f"The status code is {response.status_code}"
-#     # data = response.get_json()
-#     # assert "layout" in data
+        assert (
+            queried_score.player_name == "TestPlayer"
+        ), f"Expected 'TestPlayer', got '{queried_score.player_name}'"

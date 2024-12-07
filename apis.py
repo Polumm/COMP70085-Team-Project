@@ -3,6 +3,7 @@ from flask import Blueprint
 from app_logic.database_routes import (
     fetch_leaderboard,
     submit_score,
+    check_player,
 )
 from app_logic.game_routes import (
     create_game,
@@ -28,6 +29,7 @@ frontend_apis = {
 database_apis = {
     "/fetch_leaderboard": (fetch_leaderboard, ["GET"]),
     "/submit_score": (submit_score, ["POST"]),
+    "/check_player": (check_player, ["GET"]),
 }
 
 fetch_image_apis = {
@@ -50,7 +52,12 @@ game_apis = {
 def register_apis(app, name: str):
     apis = Blueprint("apis", name)
 
-    for api_set in (frontend_apis, database_apis, fetch_image_apis, game_apis):
+    for api_set in (
+        frontend_apis,
+        database_apis,
+        fetch_image_apis,
+        game_apis,
+    ):
         for route, (func, method) in api_set.items():
             apis.route(route, methods=method)(func)
 
