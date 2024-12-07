@@ -1,4 +1,6 @@
+from unittest.mock import patch
 from datetime import datetime, timezone
+from app_logic.models import PlayerScore, db
 
 
 def test_submit_score(client):
@@ -111,3 +113,43 @@ def test_get_random_images(client):
     # Check that URLs are unique
     urls = [image["url"] for image in data]
     assert len(set(urls)) == len(urls), "Image URLs are not unique"
+
+
+def test_check_player(client, app):
+    """Test the /check_player API endpoint."""
+
+    # Add a test player to the database
+    with app.app_context():
+        test_player = PlayerScore(
+            player_name="TestPlayer",
+            completion_time=120.5,
+            moves=30,
+            created_at=datetime.now(timezone.utc),
+        )
+        db.session.add(test_player)
+        db.session.commit()
+
+    # Test case 1: Player exists
+    response = client.get("/check_player?player_name=TestPlayer")
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "True"
+
+    # Test case 2: Player does not exist
+    response = client.get("/check_player?player_name=NonExistentPlayer")
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "False"
+
+    # Test case 3: Missing player_name parameter
+    response = client.get("/check_player")
+    assert response.status_code == 400
+    assert response.get_data(as_text=True) == "False"
+
+    # Test case 4: Handle database error (simulate failure)
+    with patch("app_logic.models.PlayerScore.query") as mock_query:
+        mock_query.filter_by.side_effect = Exception(
+            "Database connection failed"
+        )
+
+        response = client.get("/check_player?player_name=TestPlayer")
+        assert response.status_code == 500
+        assert response.get_data(as_text=True) == "False"
