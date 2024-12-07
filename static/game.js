@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval = null;
 
     window.startGame = async function () {
-        moves = 0;
+        resetGameState();
+
         try {
             // Fix the number of card pairs to 10 (20 cards total)
             const numPairs = 10;
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let col = 0; col < cols; col++) {
                     if (cardIndex >= totalCards) break;
                     const cardElement = document.createElement('div');
-                    cardElement.classList.add('card','flip-card');
+                    cardElement.classList.add('card', 'flip-card');
                     cardElement.dataset.index = cardIndex;
                     cardElement.innerHTML = `
                         <div class="flip-card-inner">
@@ -171,6 +172,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateMoveCounter(flipCount) {
         moveCounter.textContent = `${flipCount}`; // Update the move count value
     }
+
+    function resetGameState() {
+        boardIsLocked = false;
+        startTime = null;
+        moves = null;
+        images = null;
+
+        currentlyRevealedSecretIndex = null;
+        currentlyRevealedCard = null;
+
+        timerInterval = null;
+    }
 });
 
 async function submitGame(gameId) {
@@ -179,7 +192,7 @@ async function submitGame(gameId) {
 
         const apiUrl = `/submit_game/${gameId}/${playerName}`;
 
-        const response = await fetch(apiUrl, {method: 'GET',});
+        const response = await fetch(apiUrl, { method: 'GET', });
 
         if (response.ok) {
             const data = await response.json();
