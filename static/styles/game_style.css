@@ -112,7 +112,7 @@ body {
 }
 
 /* Name empty message */
-#name-error {
+#name-empty {
   margin-top: 10px; /* Space above the error message */
   color: red; /* Error message color */
   text-align: center;
