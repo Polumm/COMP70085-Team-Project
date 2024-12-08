@@ -51,7 +51,7 @@ def flip(game_id: int | str, card_index: int | str):
 
         games_lock.acquire()
         game = games[game_id]
-        games_lock.acquire()
+        games_lock.release()
 
         secret_index = game.flip(card_index)
         return jsonify(secret_index), 201
