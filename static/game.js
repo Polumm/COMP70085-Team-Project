@@ -277,30 +277,35 @@ async function deleteGame() {
     }
 }
 
-// Event listener for "Enter Name" button
 document.getElementById("enter-name-btn").addEventListener("click", function () {
-    const usernameInput = document.getElementById("username");
-    const username = usernameInput.value.trim();
-  
-    // Check if the username is empty
-    if (!username) {
-      document.getElementById("name-empty").style.display = "block";
-      return;
-    }
-  
-    // Hide the name entry section
-    document.getElementById("name-entry").style.display = "none";
-  
-    // Display the game interface with the username
-    document.getElementById("game-interface").style.display = "block";
-    document.getElementById("user-name-display").textContent = username;
-  
-    // Optionally, you can store the username in local storage for use in other parts of the game
-    localStorage.setItem("username", username);
-  });
-  
-  // Placeholder function for starting the game
-  function startGame() {
-    alert("Game Started!");
-    // Your game logic goes here
+  const usernameInput = document.getElementById("username");
+  const username = usernameInput.value.trim();
+
+  // Check if the username is empty
+  if (!username) {
+    document.getElementById("name-empty").style.display = "block";
+    return;
   }
+
+  // Hide the name entry section
+  document.getElementById("name-entry").style.display = "none";
+
+  // Display the game interface with the username
+  document.getElementById("game-interface").style.display = "block";
+  document.getElementById("user-name-display").textContent = username;
+
+  // Optionally, you can store the username in local storage for use in other parts of the game
+  localStorage.setItem("username", username);
+});
+
+// Function to start the game
+function startGame() {
+  // Hide the description and button section
+  document.querySelector(".description-and-button").style.display = "none";
+
+  // Display the game board
+  document.getElementById("game-board").style.display = "block";
+
+  alert("Game Started!");
+  // Add additional game logic here
+}

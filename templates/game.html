@@ -26,16 +26,18 @@
 
     <!-- Game Interface: Initially hidden -->
     <div id="game-interface" style="display: none;">
-      <div class="counter" id="timer">
-        <p>Time: <span id="time-value">0</span>s</p>
-      </div>
       <div class="description-and-button">
         <h2 id="greeting">Hi <span id="user-name-display"></span></h2>
         <p>Match all the cards as quickly as you can!</p>
         <button onclick="startGame()">Start New Game</button>
       </div>
-      <div class="counter" id="move-counter">
-        <p>Moves: <span id="moves-value">0</span></p>
+      <div class="info-bar">
+        <div class="counter" id="timer">
+          <p>Time: <span id="time-value">0</span>s</p>
+        </div>
+        <div class="counter" id="move-counter">
+          <p>Moves: <span id="moves-value">0</span></p>
+        </div>
       </div>
       <div class="game-board" id="game-board"></div>
     </div>
