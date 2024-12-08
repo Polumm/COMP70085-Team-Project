@@ -1,48 +1,66 @@
 <!doctype html>
 <html lang="en">
 
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlipMatch Adventure</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/game_style.css') }}" />
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>FlipMatch Adventure</title>
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/game_style.css') }}" />
 </head>
 
+
 <body>
-  <div class="container">
-    <!-- Name Entry Section: Initially displayed -->
-    <div class="name-entry" id="name-entry">
-      <label for="username">Enter Your Name:</label>
-      <input type="text" id="username" name="username" placeholder="Your name here" required />
-      <button id="enter-name-btn" class="button">Enter Name</button>
-      <p id="name-error" style="color: red; display: none;">
-        Name already exists. Please choose another name.
-      </p>
-      <p id="name-empty" style="color: red; display: none;">
-        Please enter a name.
-      </p>
-    </div>
+ <div class="container">
+   <!-- Name Entry Section: Initially displayed -->
+   <div class="name-entry" id="name-entry">
+     <label for="username">Enter Your Name:</label>
+     <input type="text" id="username" name="username" placeholder="Your name here" required />
+     <button id="enter-name-btn" class="button">Enter Name</button>
+     <p id="name-error" style="color: red; display: none;">
+       Name already exists. Please choose another name.
+     </p>
+     <p id="name-empty" style="color: red; display: none;">
+       Please enter a name.
+     </p>
+   </div>
 
-    <!-- Game Interface: Initially hidden -->
-    <div id="game-interface" style="display: none;">
-      <div class="counter" id="timer">
-        <p>Time: <span id="time-value">0</span>s</p>
-      </div>
-      <div class="description-and-button">
-        <h2 id="greeting">Hi <span id="user-name-display"></span></h2>
-        <p>Match all the cards as quickly as you can!</p>
-        <button onclick="startGame()">Start New Game</button>
-      </div>
-      <div class="counter" id="move-counter">
-        <p>Moves: <span id="moves-value">0</span></p>
-      </div>
-      <div class="game-board" id="game-board"></div>
-    </div>
-  </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{{ url_for('static', filename='game.js') }}"></script>
+   <!-- Game Interface: Initially hidden -->
+   <div id="game-interface" style="display: none;">
+     <div class="description-and-button">
+       <h2 id="greeting">Hi <span id="user-name-display"></span></h2>
+       <p>Match all the cards as quickly as you can!</p>
+       <button onclick="startGame()">Start New Game</button>
+     </div>
+     <div class="info-bar">
+       <div class="counter" id="timer">
+         <p>Time: <span id="time-value">0</span>s</p>
+       </div>
+       <div class="counter" id="move-counter">
+         <p>Moves: <span id="moves-value">0</span></p>
+       </div>
+     </div>
+     <div class="game-board" id="game-board"></div>
+
+      <!-- Game Over Popup (initially hidden) -->
+      <div id="game-over-popup" class="popup hidden">
+        <h2>Game Over!</h2>
+        <p>Do you want to submit your score?</p>
+        <button id="submit-score">Submit Score</button>
+        <!-- <a href="game" class="button">Start Game</a> -->
+        <button id="return-home">Return Home</button>
+        <button id="start-new-game">Start New Game</button>
+        <button id="leaderboard" class="hidden">Leaderboard</button>
+      </div>
+   </div>
+ </div>
+
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="{{ url_for('static', filename='game.js') }}"></script>
 </body>
+
 
 </html>
