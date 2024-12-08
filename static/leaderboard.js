@@ -21,6 +21,7 @@ async function fetchLeaderboard() {
             playerElement.classList.add('leaderboard-item');
 
             // 创建玩家条目，包含排名、玩家名字和完成时间
+            // playerElement.innerHTML = `<div class="leaderboard-item-content"><strong>#${index + 1} ${player.player_name}</strong></div> <div class="leaderboard-item-content"><span>${player.moves}</span></div> <div class="leaderboard-item-content"><span>${player.completion_time}</span></div>`;
             playerElement.innerHTML = `<strong>#${index + 1} ${player.player_name}</strong> <span>${player.moves}</span> <span>${player.completion_time}</span>`;
 
             // 将生成的玩家条目添加到排行榜容器中
