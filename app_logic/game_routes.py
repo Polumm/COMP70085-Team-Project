@@ -51,9 +51,9 @@ def flip(game_id: int | str, card_index: int | str):
 
         games_lock.acquire()
         game = games[game_id]
+        secret_index = game.flip(card_index)
         games_lock.release()
 
-        secret_index = game.flip(card_index)
         return jsonify(secret_index), 201
     except KeyError:
         return jsonify({"error": "The game doesn't exist"}), 400

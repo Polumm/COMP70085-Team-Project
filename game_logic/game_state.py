@@ -147,10 +147,11 @@ games_lock = threading.Lock()
 
 def clear_game():
     while True:
-        sleep(5)
+        sleep(60)
         games_lock.acquire()
-        for game_id, game in games.items():
-            if game.can_destroy:
+        game_ids = tuple(games.keys())
+        for game_id in game_ids:
+            if game_id in games and games[game_id].can_destroy():
                 del games[game_id]
         games_lock.release()
 
