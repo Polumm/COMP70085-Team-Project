@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const newGameId = await response.json();
       gameId = newGameId;
 
+      // hide the pop up window
+      const gameOverPopup = document.getElementById("game-over-popup");
+      gameOverPopup.classList.add("hidden");
+
       // Restart timer
       startTime = Date.now();
 
@@ -266,43 +270,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document
-  .getElementById("enter-name-btn")
-  .addEventListener("click", async function () {
-    const usernameInput = document.getElementById("username");
-    const username = usernameInput.value.trim();
+    .getElementById("enter-name-btn")
+    .addEventListener("click", async function () {
+      const usernameInput = document.getElementById("username");
+      const username = usernameInput.value.trim();
 
-    // Check if the username is empty
-    if (!username) {
-      document.getElementById("name-empty").style.display = "block";
-      return;
-    }
-
-    // Check for duplicate usernames via the API
-    try {
-      const response = await fetch(`/check_player?player_name=${encodeURIComponent(username)}`);
-      if (!response.ok) {
-        throw new Error("Failed to check username availability.");
-      }
-
-      const isDuplicate = await response.text(); // Expecting "True" or "False"
-      if (isDuplicate === "True") {
-        document.getElementById("name-duplicate").style.display = "block"; // Show duplicate warning
+      // Check if the username is empty
+      if (!username) {
+        document.getElementById("name-empty").style.display = "block";
         return;
       }
-    } catch (error) {
-      console.error("Error checking username:", error);
-      alert("The username is already taken on the leaderboard.\nPlease try a different one!");
-      return;
-    }
 
-    // Hide the name entry section
-    document.getElementById("name-entry").style.display = "none";
+      // Check for duplicate usernames via the API
+      try {
+        const response = await fetch(`/check_player?player_name=${encodeURIComponent(username)}`);
+        if (!response.ok) {
+          throw new Error("Failed to check username availability.");
+        }
 
-    // Display the game interface with the username
-    document.getElementById("game-interface").style.display = "block";
-    document.getElementById("user-name-display").textContent = username;
+        const isDuplicate = await response.text(); // Expecting "True" or "False"
+        if (isDuplicate === "True") {
+          document.getElementById("name-duplicate").style.display = "block"; // Show duplicate warning
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking username:", error);
+        alert("The username is already taken on the leaderboard.\nPlease try a different one!");
+        return;
+      }
 
-    playerName = username;
-  });
+      // Hide the name entry section
+      document.getElementById("name-entry").style.display = "none";
+
+      // Display the game interface with the username
+      document.getElementById("game-interface").style.display = "block";
+      document.getElementById("user-name-display").textContent = username;
+
+      playerName = username;
+    });
 
 });
