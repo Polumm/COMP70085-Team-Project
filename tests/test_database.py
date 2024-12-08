@@ -18,6 +18,60 @@ def test_submit_score(client):
     assert data["moves"] == 30
 
 
+def test_internal_submit_score(client, app):
+    """Test the internal_submit_score function."""
+    # Test case 1: Valid input data
+    with app.app_context():
+        from app_logic.database_routes import internal_submit_score
+        from app_logic.models import PlayerScore
+
+        player_name = "Test Player"
+        completion_time = 120.5
+        moves = 30
+
+        # Call the function directly
+        response = internal_submit_score(player_name, completion_time, moves)
+        assert response[1] == 201  # Ensure it returns a 201 status code
+        data = response[0].json
+        assert data["player_name"] == player_name
+        assert data["completion_time"] == completion_time
+        assert data["moves"] == moves
+
+        # Verify the data is persisted in the database
+        persisted_score = PlayerScore.query.filter_by(
+            player_name=player_name
+        ).first()
+        assert persisted_score is not None
+        assert persisted_score.player_name == player_name
+        assert persisted_score.completion_time == completion_time
+        assert persisted_score.moves == moves
+
+    # Test case 2: Invalid input data (missing player_name)
+    with app.app_context():
+        from app_logic.database_routes import internal_submit_score
+
+        response = internal_submit_score(None, completion_time, moves)
+        assert response[1] == 500  # Ensure it returns a 500 status code
+        data = response[0].json
+        assert "error" in data
+
+    # Test case 3: Handle database error
+    with app.app_context():
+        from app_logic.database_routes import internal_submit_score
+        from unittest.mock import patch
+
+        with patch("app_logic.models.db.session.add") as mock_add:
+            mock_add.side_effect = Exception("Database error")
+
+            response = internal_submit_score(
+                player_name, completion_time, moves
+            )
+            assert response[1] == 500  # Ensure it returns a 500 status code
+            data = response[0].json
+            assert "error" in data
+            assert "Database error" in data["error"]
+
+
 def test_submit_score_invalid_data(client):
     """Test /submit_score route with invalid data."""
     invalid_payload = {"player_name": "", "completion_time": -5, "moves": -1}
