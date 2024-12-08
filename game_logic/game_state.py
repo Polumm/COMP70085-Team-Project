@@ -33,9 +33,11 @@ class Game:
         self._start_time = None
         self._flip_count: int = 0
 
-        self._spawn_time = time()
+        self._last_operation_time = time()
 
     def flip(self, target: int) -> int:
+        self._last_operation_time = time()
+
         if self._start_time is None:
             self._start_time = time()
         self._time = time() - self._start_time
@@ -98,7 +100,7 @@ class Game:
         return internal_submit_score(player_name, self._time, self._flip_count)
 
     def can_destroy(self):
-        return time() > self._spawn_time + 3600
+        return time() > self._last_operation_time + 600
 
     # This method is only for testing purposes
     def force_reveal(self, target: int):
