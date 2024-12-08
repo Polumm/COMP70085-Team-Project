@@ -17,14 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let playerName = null;
 
-  window.startGame = async function () {
+  window.startGame = async function() {
     // reset the game state
     resetGameState();
 
     try {
       // Fix the number of card pairs to 10 (20 cards total)
       const numPairs = 10;
-      const totalCards = numPairs * 2;
 
       // Call API to create a new game
       let url = null;
@@ -32,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         url = `/reset_game/${gameId}`;
       } else {
         url = "/create_default_game";
-        url = "/create_game/3";
       }
       const response = await fetch(url, { method: "POST" });
       if (!response.ok) {
@@ -268,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("enter-name-btn")
-    .addEventListener("click", function () {
+    .addEventListener("click", function() {
       const usernameInput = document.getElementById("username");
       const username = usernameInput.value.trim();
 
