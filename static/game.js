@@ -7,24 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let startTime = null;
     let moves = null;
     let images = null;
- 
+
     let currentlyRevealedSecretIndex = null;
     let currentlyRevealedCard = null;
- 
+
     let timerInterval = null;
 
     let flippedCardsCount = 0;
- 
+
     window.startGame = async function () {
         resetGameState();
- 
- 
+
+
         try {
             // Fix the number of card pairs to 10 (20 cards total)
             const numPairs = 10;
             const totalCards = numPairs * 2;
- 
- 
+
+
             // Call API to create a new game
             let url = null;
             if (gameId != null) {
@@ -38,19 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const newGameId = await response.json();
             gameId = newGameId;
- 
- 
+
+
             // Reset game state
             gameBoard.innerHTML = '';
             boardIsLocked = false;
             moves = 0;
             startTime = Date.now();
- 
- 
+
+
             updateMoveCounter(0);
             updateTimer(0);
- 
- 
+
+
             // Start the timer for the game
             if (timerInterval) {
                 clearInterval(timerInterval); // Prevent existing timer from repeating
@@ -59,19 +59,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 updateTimer(elapsedTime);
             }, 1000); // Update timer every second
- 
+
             // Fetch random images to use as card content
             const imageResponse = await fetch(`/get_random_images?count=${numPairs}`);
             if (!imageResponse.ok) {
                 throw new Error('Failed to fetch images');
             }
             images = await imageResponse.json();
- 
+
             // Create a fixed layout of 4 rows and 5 columns for the cards
             const rows = 4;
             const cols = 5;
             let cardIndex = 0;
- 
+
             for (let row = 0; row < rows; row++) {
                 const rowElement = document.createElement('div');
                 rowElement.classList.add('row');
@@ -95,18 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set the timer and move counter to be visible
             document.getElementById('timer').style.opacity = 1;
             document.getElementById('move-counter').style.opacity = 1;
- 
+
         } catch (error) {
             console.error('Error starting the game:', error);
         }
     }
- 
+
     async function flipCard(cardElement) {
         if (boardIsLocked) return; // Prevent flipping when game is over
 
         moves++; // Increment the number of card flips
         updateMoveCounter(moves); // Update the card flip counter display
- 
+
         // Call API to check if cards match
         try {
             const cardIndex = cardElement.dataset.index;
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
             });
             const secretIndex = await response.json();
- 
+
             // Flipping process failed
             if (secretIndex == -1) {
                 return;
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         cardElement.querySelector('.flip-card-inner').classList.add('flipped');
                         const cardBack = cardElement.querySelector('.card-back');
                         cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
- 
+
                         const tempCard = currentlyRevealedCard;
                         setTimeout(() => {
                             tempCard.style.opacity = 0.0;
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         cardElement.querySelector('.flip-card-inner').classList.add('flipped');
                         const cardBack = cardElement.querySelector('.card-back');
                         cardBack.innerHTML = `<img src="${images[secretIndex].url}" alt="card image">`;
- 
+
                         // Lock the board, wait for 1 second, then flip both cards back
                         boardIsLocked = true;
                         const tempCard = currentlyRevealedCard;
@@ -209,34 +209,34 @@ document.addEventListener('DOMContentLoaded', () => {
             gameOverPopup.classList.add("hidden");
         });
     }
- 
+
     function updateTimer(time) {
         timer.textContent = `${time}`; // Update the time value
     }
- 
+
     function updateMoveCounter(flipCount) {
         moveCounter.textContent = `${flipCount}`; // Update the move count value
     }
- 
+
     function resetGameState() {
         boardIsLocked = false;
         startTime = null;
         moves = null;
         images = null;
- 
+
         currentlyRevealedSecretIndex = null;
         currentlyRevealedCard = null;
- 
+
         timerInterval = null;
     }
- });
- 
- async function submitGame(gameId) {
+});
+
+async function submitGame(gameId) {
     try {
         const playerName = "default_name";
         const apiUrl = `/submit_game/${gameId}/${playerName}`;
         const response = await fetch(apiUrl, { method: 'GET', });
- 
+
         if (response.ok) {
             const data = await response.json();
             console.log("Game submitted successfully:", data);
@@ -250,10 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Network error or API call failed:", error);
         alert("An error occurred while submitting the game. Please try again later.");
     }
- }
+}
 
 
- async function getTime() {
+async function getTime() {
     try {
         const response = await fetch(`/get_time/${gameId}`);
         if (response.ok) {
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
         console.error('Error getting game time:', error);
     }
- }
+}
 
 async function getFlipCount() {
     try {
@@ -279,9 +279,9 @@ async function getFlipCount() {
     } catch (error) {
         console.error('Error getting flip count:', error);
     }
- }
- 
- async function resetGame() {
+}
+
+async function resetGame() {
     try {
         const response = await fetch(`/reset_game/${gameId}`, { method: 'POST' });
         if (response.ok) {
@@ -293,9 +293,9 @@ async function getFlipCount() {
     } catch (error) {
         console.error('Error resetting game:', error);
     }
- }
- 
- async function detectGameFinish() {
+}
+
+async function detectGameFinish() {
     try {
         const response = await fetch(`/detect_game_finish/${gameId}`);
         if (response.ok) {
@@ -326,7 +326,7 @@ async function getFlipCount() {
 
                 // Return home button event listener
                 returnHomeBtn.addEventListener("click", () => {
-                    window.location.href = "/"; 
+                    window.location.href = "/";
                 });
 
                 // Start new game button event listener
@@ -343,8 +343,8 @@ async function getFlipCount() {
         console.error('Error detecting game finish:', error);
     }
 }
- 
- async function deleteGame() {
+
+async function deleteGame() {
     try {
         const response = await fetch(`/delete_game/${gameId}`, { method: 'DELETE' });
         if (response.ok) {
@@ -357,40 +357,39 @@ async function getFlipCount() {
     } catch (error) {
         console.error('Error deleting game:', error);
     }
- }
- 
- 
- document.getElementById("enter-name-btn").addEventListener("click", function () {
-  const usernameInput = document.getElementById("username");
-  const username = usernameInput.value.trim();
- 
-  // Check if the username is empty
-  if (!username) {
-    document.getElementById("name-empty").style.display = "block";
-    return;
-  }
- 
-  // Hide the name entry section
-  document.getElementById("name-entry").style.display = "none";
- 
-  // Display the game interface with the username
-  document.getElementById("game-interface").style.display = "block";
-  document.getElementById("user-name-display").textContent = username;
- 
-  // Optionally, you can store the username in local storage for use in other parts of the game
-  localStorage.setItem("username", username);
- });
- 
- 
- // Function to start the game
- function startGame() {
-  // Hide the description and button section
-  document.querySelector(".description-and-button").style.display = "none";
- 
-  // Display the game board
-  document.getElementById("game-board").style.display = "block";
- 
-  alert("Game Started!");
-  // Add additional game logic here
- }
- 
+}
+
+
+document.getElementById("enter-name-btn").addEventListener("click", function () {
+    const usernameInput = document.getElementById("username");
+    const username = usernameInput.value.trim();
+
+    // Check if the username is empty
+    if (!username) {
+        document.getElementById("name-empty").style.display = "block";
+        return;
+    }
+
+    // Hide the name entry section
+    document.getElementById("name-entry").style.display = "none";
+
+    // Display the game interface with the username
+    document.getElementById("game-interface").style.display = "block";
+    document.getElementById("user-name-display").textContent = username;
+
+    // Optionally, you can store the username in local storage for use in other parts of the game
+    localStorage.setItem("username", username);
+});
+
+
+// Function to start the game
+function startGame() {
+    // Hide the description and button section
+    document.querySelector(".description-and-button").style.display = "none";
+
+    // Display the game board
+    document.getElementById("game-board").style.display = "block";
+
+    alert("Game Started!");
+    // Add additional game logic here
+}
