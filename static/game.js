@@ -266,24 +266,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document
-    .getElementById("enter-name-btn")
-    .addEventListener("click", function () {
-      const usernameInput = document.getElementById("username");
-      const username = usernameInput.value.trim();
+  .getElementById("enter-name-btn")
+  .addEventListener("click", async function () {
+    const usernameInput = document.getElementById("username");
+    const username = usernameInput.value.trim();
 
-      // Check if the username is empty
-      if (!username) {
-        document.getElementById("name-empty").style.display = "block";
-        return;
+    // Check if the username is empty
+    if (!username) {
+      document.getElementById("name-empty").style.display = "block";
+      return;
+    }
+
+    // Check for duplicate usernames via the API
+    try {
+      const response = await fetch(`/check_player?player_name=${encodeURIComponent(username)}`);
+      if (!response.ok) {
+        throw new Error("Failed to check username availability.");
       }
 
-      // Hide the name entry section
-      document.getElementById("name-entry").style.display = "none";
+      const isDuplicate = await response.text(); // Expecting "True" or "False"
+      if (isDuplicate === "True") {
+        document.getElementById("name-duplicate").style.display = "block"; // Show duplicate warning
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking username:", error);
+      alert("The username is already taken on the leaderboard.\nPlease try a different one!");
+      return;
+    }
 
-      // Display the game interface with the username
-      document.getElementById("game-interface").style.display = "block";
-      document.getElementById("user-name-display").textContent = username;
+    // Hide the name entry section
+    document.getElementById("name-entry").style.display = "none";
 
-      playerName = username;
-    });
+    // Display the game interface with the username
+    document.getElementById("game-interface").style.display = "block";
+    document.getElementById("user-name-display").textContent = username;
+
+    playerName = username;
+  });
+
 });
