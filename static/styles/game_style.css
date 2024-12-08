@@ -137,7 +137,7 @@ body {
 }
 
 .card {
-  width: 80px;
+  width: 100px;
   height: 120px;
   background-color: #ffffff;
   border-radius: 10px;
@@ -190,7 +190,7 @@ body {
 /* Flip card styles */
 .flip-card {
   background-color: transparent;
-  width: 80px;
+  width: 100px;
   /* or dynamic width */
   height: 120px;
   /* or dynamic height */

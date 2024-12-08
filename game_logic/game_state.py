@@ -1,7 +1,8 @@
 from collections.abc import MutableSequence
 from typing import Optional
 from random import shuffle
-from time import time
+from time import sleep, time
+import threading
 
 from app_logic.database_routes import internal_submit_score
 from game_logic.card import Card
@@ -29,11 +30,15 @@ class Game:
         self._revealed_card_index: Optional[int] = None
 
         self._time: float = 0.0
+        self._start_time = None
         self._flip_count: int = 0
 
+        self._spawn_time = time()
+
     def flip(self, target: int) -> int:
-        if self._time == 0:
-            self._time = time()
+        if self._start_time is None:
+            self._start_time = time()
+        self._time = time() - self._start_time
 
         self._flip_count += 1
 
@@ -92,6 +97,9 @@ class Game:
     def submit_score(self, player_name="DefaultName"):
         return internal_submit_score(player_name, self._time, self._flip_count)
 
+    def can_destroy(self):
+        return time() > self._spawn_time + 3600
+
     # This method is only for testing purposes
     def force_reveal(self, target: int):
         target_card = self._get_card(target)
@@ -134,3 +142,17 @@ class Game:
 
 
 games: dict[int, Game] = {}
+games_lock = threading.Lock()
+
+
+def clear_game():
+    while True:
+        sleep(5)
+        games_lock.acquire()
+        for game_id, game in games.items():
+            if game.can_destroy:
+                del games[game_id]
+        games_lock.release()
+
+
+threading.Thread(target=clear_game, daemon=True).start()

@@ -45,7 +45,7 @@ game_apis = {
     "/reset_game/<game_id>": (reset_game, ["POST"]),
     "/delete_game/<game_id>": (delete_game, ["POST"]),
     "/detect_game_finish/<game_id>": (detect_game_finish, ["GET"]),
-    "/submit_game/<game_id>": (submit_game, ["GET"]),
+    "/submit_game/<game_id>/<player_name>": (submit_game, ["POST"]),
 }
 
 
