@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let gameSubmitted = false;
 
-  window.startGame = async function() {
+  let playerName = null;
+
+  window.startGame = async function () {
     // reset the game state
     resetGameState();
 
@@ -164,46 +166,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to flip the card:", error);
     } finally {
       if (gameId != null) {
-        // if (await detectGameFinish(gameId)) gameOver();
         await detectGameFinish();
       }
     }
   }
-
-  // function gameOver() {
-  //     console.log("Game over: stopping timer");
-  //     clearInterval(timerInterval); // Stop the timer
-  //     timerInterval = null;
-  //
-  //     const gameOverPopup = document.getElementById("game-over-popup");
-  //     const leaderboardBtn = document.getElementById("leaderboard");
-  //     const submitScoreBtn = document.getElementById("submit-score");
-  //     const returnHomeBtn = document.getElementById("return-home");
-  //     const startNewGameBtn = document.getElementById("start-new-game");
-  //
-  //     // Show the game over popup and leaderboard button
-  //     gameOverPopup.classList.remove("hidden");
-  //     leaderboardBtn.classList.remove("hidden");
-  //
-  //     // Submit score button event listener
-  //     submitScoreBtn.addEventListener("click", async () => {
-  //         await submitGame(gameId);
-  //         gameOverPopup.classList.add("hidden");
-  //     });
-  //
-  //     // Return home button event listener
-  //     returnHomeBtn.addEventListener("click", () => {
-  //         // Redirect to home page
-  //         window.location.href = "/index.html";
-  //     });
-  //
-  //     // Start new game button event listener
-  //     startNewGameBtn.addEventListener("click", () => {
-  //         // Logic to start a new game, e.g., reset game state
-  //         startGame();
-  //         gameOverPopup.classList.add("hidden");
-  //     });
-  // }
 
   function updateTimer(time) {
     timer.textContent = `${time}`; // Update the time value
@@ -244,16 +210,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const leaderboardBtn = document.getElementById("leaderboard");
           const submitScoreBtn = document.getElementById("submit-score");
           const returnHomeBtn = document.getElementById("return-home");
-          const startNewGameBtn = document.getElementById("start-new-game");
 
           // Show the game over popup and leaderboard button
           gameOverPopup.classList.remove("hidden");
-          leaderboardBtn.classList.remove("hidden");
 
           // Submit score button event listener
           submitScoreBtn.addEventListener("click", async () => {
             await submitGame();
-            gameOverPopup.classList.add("hidden");
+            submitScoreBtn.classList.add("hidden");
           });
 
           // Return home button event listener
@@ -261,11 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "/";
           });
 
-          // Start new game button event listener
-          startNewGameBtn.addEventListener("click", () => {
-            // Logic to start a new game, e.g., reset game state
-            startGame();
-            gameOverPopup.classList.add("hidden");
+          // Leaderboard button event listener
+          leaderboardBtn.addEventListener("click", () => {
+            window.location.href = "/leaderboard";
           });
         }
       } else {
@@ -283,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const playerName = "default_name";
       const apiUrl = `/submit_game/${gameId}/${playerName}`;
       const response = await fetch(apiUrl, { method: "POST" });
 
@@ -305,48 +266,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function deleteGame(gameId) {
-    if (gameId == null) return;
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `/delete_game/${gameId}`, false);
-    } catch (error) {
-      console.error("Error deleting game:", error);
-    }
-  }
+  document
+    .getElementById("enter-name-btn")
+    .addEventListener("click", function () {
+      const usernameInput = document.getElementById("username");
+      const username = usernameInput.value.trim();
+
+      // Check if the username is empty
+      if (!username) {
+        document.getElementById("name-empty").style.display = "block";
+        return;
+      }
+
+      // Hide the name entry section
+      document.getElementById("name-entry").style.display = "none";
+
+      // Display the game interface with the username
+      document.getElementById("game-interface").style.display = "block";
+      document.getElementById("user-name-display").textContent = username;
+
+      playerName = username;
+    });
 });
-
-document
-  .getElementById("enter-name-btn")
-  .addEventListener("click", function() {
-    const usernameInput = document.getElementById("username");
-    const username = usernameInput.value.trim();
-
-    // Check if the username is empty
-    if (!username) {
-      document.getElementById("name-empty").style.display = "block";
-      return;
-    }
-
-    // Hide the name entry section
-    document.getElementById("name-entry").style.display = "none";
-
-    // Display the game interface with the username
-    document.getElementById("game-interface").style.display = "block";
-    document.getElementById("user-name-display").textContent = username;
-
-    // Optionally, you can store the username in local storage for use in other parts of the game
-    localStorage.setItem("username", username);
-  });
-
-// Function to start the game
-// function startGame() {
-//     // Hide the description and button section
-//     document.querySelector(".description-and-button").style.display = "none";
-//
-//     // Display the game board
-//     document.getElementById("game-board").style.display = "block";
-//
-//     alert("Game Started!");
-//     // Add additional game logic here
-// }
