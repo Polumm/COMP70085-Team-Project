@@ -51,6 +51,13 @@
         padding: 20px;
       }
 
+      .leaderboard-header {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        flex-direction: row;
+      }
+
       .leaderboard-item {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
@@ -70,11 +77,27 @@
       /* .leaderboard-item-content { */
       /*   display: table-cell; */
       /* } */
+
+      .button {
+        background: #fdbb2d;
+        border: none;
+        border-radius: 10px;
+        padding: 15px 25px;
+        font-size: 1em;
+        font-weight: 700;
+        color: #1a2a6c;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="leaderboard-title">Game Leaderboard</div>
+      <div class="leaderboard-header">
+        <div class="leaderboard-title">Game Leaderboard</div>
+        <button onclick="history.back()" class="button">Return</button>
+      </div>
       <div class="leaderboard" id="leaderboard">
         <p id="no-data" style="text-align: center">Loading leaderboard...</p>
         <!-- Leaderboard items will be dynamically added here -->
