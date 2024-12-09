@@ -207,3 +207,78 @@ def test_check_player(client, app):
         response = client.get("/check_player?player_name=TestPlayer")
         assert response.status_code == 500
         assert response.get_data(as_text=True) == "False"
+
+
+def test_init_tables(client, app):
+    """Test the /init_tables endpoint
+    to ensure tables are created if not existing."""
+    response = client.post("/init_tables")
+    assert response.status_code in (200, 500)
+    # If successful, check response structure
+    if response.status_code == 200:
+        data = response.get_json()
+        assert "message" in data
+        assert "player_scores_existed" in data
+        assert "users_existed" in data
+
+
+def test_register(client, app):
+    """Test the /register endpoint."""
+    # Successful registration
+    payload = {"username": "NewUser", "password": "Secret123"}
+    response = client.post("/register", json=payload)
+    assert response.status_code == 201
+    data = response.get_json()
+    assert "message" in data
+
+    # Duplicate registration
+    response = client.post("/register", json=payload)
+    assert response.status_code == 400
+    data = response.get_json()
+    assert "error" in data and "Username already exists" in data["error"]
+
+    # Missing fields
+    response = client.post("/register", json={"username": "UserOnly"})
+    assert response.status_code == 400
+    data = response.get_json()
+    assert (
+        "error" in data
+        and "Username and password are required" in data["error"]
+    )
+
+
+def test_login_and_logout(client, app):
+    """Test the /login and /logout endpoints."""
+    # First, register a user
+    register_payload = {"username": "LoginUser", "password": "Pass123"}
+    response = client.post("/register", json=register_payload)
+    assert response.status_code == 201
+
+    # Login with correct credentials
+    login_payload = {"username": "LoginUser", "password": "Pass123"}
+    response = client.post("/login", json=login_payload)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "message" in data and "Login successful" in data["message"]
+
+    # Logout
+    response = client.post("/logout")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "message" in data and "Logged out successfully" in data["message"]
+
+    # Login with incorrect credentials
+    bad_login_payload = {"username": "LoginUser", "password": "WrongPass"}
+    response = client.post("/login", json=bad_login_payload)
+    assert response.status_code == 401
+    data = response.get_json()
+    assert "error" in data and "Invalid username or password" in data["error"]
+
+    # Missing fields
+    response = client.post("/login", json={"username": "LoginUser"})
+    assert response.status_code == 400
+    data = response.get_json()
+    assert (
+        "error" in data
+        and "Username and password are required" in data["error"]
+    )

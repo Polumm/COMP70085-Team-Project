@@ -1,7 +1,6 @@
 from flask import Flask
 import os
 
-
 from app_logic.database import (
     init_db_connection,
     load_sql_queries,
@@ -45,8 +44,10 @@ def create_app(
     # Initialize target database connections
     target_conn, target_cur = init_db_connection(target_db_url)
 
-    # Create tables in the target database
+    # Create tables in the target database (if you still want to do it here)
+    # Previously we only created player_scores, now also create users
     target_cur.execute(sql_queries["table_creation"]["create_player_scores"])
+    target_cur.execute(sql_queries["table_creation"]["create_users"])
 
     # Close database connections
     target_cur.close()
