@@ -17,9 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let playerName = null;
 
+  let gameStarted = false;
+
+  // Show the game over popup
+  const gameOverPopup = document.getElementById("game-over-popup");
+  const leaderboardBtn = document.getElementById("leaderboard");
+  const submitScoreBtn = document.getElementById("submit-score");
+  const returnHomeBtn = document.getElementById("return-home");
+
+
+  // Submit score button event listener
+  submitScoreBtn.addEventListener("click", async () => {
+    await submitGame();
+  });
+
+  // Return home button event listener
+  returnHomeBtn.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
+  // Leaderboard button event listener
+  leaderboardBtn.addEventListener("click", () => {
+    window.location.href = "/leaderboard";
+  });
+
   window.startGame = async function () {
-    // reset the game state
-    resetGameState();
 
     try {
       // Fix the number of card pairs to 10 (20 cards total)
@@ -29,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Call API to create a new game
       let url = null;
       if (gameId != null) {
+        // reset the game state
+        resetGameState();
         url = `/reset_game/${gameId}`;
       } else {
         url = "/create_default_game";
@@ -71,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const cols = 5;
       let cardIndex = 0;
 
+      gameBoard.innerHTML = "";
       for (let row = 0; row < rows; row++) {
         const rowElement = document.createElement("div");
         rowElement.classList.add("row");
@@ -194,6 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
     timerInterval = null;
     gameBoard.innerHTML = "";
     gameSubmitted = false;
+
+    gameStarted = false;
   }
 
   async function detectGameFinish() {
@@ -208,30 +235,8 @@ document.addEventListener("DOMContentLoaded", () => {
           clearInterval(timerInterval);
           timerInterval = null;
 
-          // Show the game over popup
-          const gameOverPopup = document.getElementById("game-over-popup");
-          const leaderboardBtn = document.getElementById("leaderboard");
-          const submitScoreBtn = document.getElementById("submit-score");
-          const returnHomeBtn = document.getElementById("return-home");
-
           // Show the game over popup and leaderboard button
           gameOverPopup.classList.remove("hidden");
-
-          // Submit score button event listener
-          submitScoreBtn.addEventListener("click", async () => {
-            await submitGame();
-            submitScoreBtn.classList.add("hidden");
-          });
-
-          // Return home button event listener
-          returnHomeBtn.addEventListener("click", () => {
-            window.location.href = "/";
-          });
-
-          // Leaderboard button event listener
-          leaderboardBtn.addEventListener("click", () => {
-            window.location.href = "/leaderboard";
-          });
         }
       } else {
         console.error("Failed to detect if game is finished");
@@ -243,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function submitGame() {
     if (gameSubmitted) {
-      alert("You have already submitted your game!");
+      alert("You have already submitted this game!");
       return;
     }
 
