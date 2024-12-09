@@ -15,12 +15,12 @@ def create_game(num_pairs: int | str):
     Returns:
         The created card layout in JSON format.
     """
+    games_lock.acquire()
     try:
         num_pairs = int(num_pairs)
         game = Game(num_pairs)
         game_id = id(game)
 
-        games_lock.acquire()
         games[game_id] = game
 
         return jsonify(game_id), 201
@@ -46,11 +46,11 @@ def create_default_game():
 
 # route("/flip/<game_id>/<card_index>", methods=["POST"])
 def flip(game_id: int | str, card_index: int | str):
+    games_lock.acquire()
     try:
         game_id = int(game_id)
         card_index = int(card_index)
 
-        games_lock.acquire()
         game = games[game_id]
         secret_index = game.flip(card_index)
 
@@ -65,8 +65,8 @@ def flip(game_id: int | str, card_index: int | str):
 
 # route("/get_time/<game_id>")
 def get_time(game_id: int | str):
+    games_lock.acquire()
     try:
-        games_lock.acquire()
         game = games[int(game_id)]
         return jsonify(game.get_time()), 201
     except KeyError:
@@ -79,8 +79,8 @@ def get_time(game_id: int | str):
 
 # route("/get_flip_count/<game_id>")
 def get_flip_count(game_id: int | str):
+    games_lock.acquire()
     try:
-        games_lock.acquire()
         game = games[int(game_id)]
         return jsonify(game.get_flip_count()), 201
     except KeyError:
@@ -93,9 +93,9 @@ def get_flip_count(game_id: int | str):
 
 # route("/reset_game/<game_id>")
 def reset_game(game_id: int | str):
+    games_lock.acquire()
     try:
         game_id = int(game_id)
-        games_lock.acquire()
         num_pairs = games[game_id].get_num_pairs()
         del games[game_id]
         return create_game(num_pairs)
@@ -109,9 +109,9 @@ def reset_game(game_id: int | str):
 
 # route("/detect_game_finish/<game_id>")
 def detect_game_finish(game_id: int | str):
+    games_lock.acquire()
     try:
         game_id = int(game_id)
-        games_lock.acquire()
         game = games[game_id]
         return jsonify(game.detect_finished()), 201
     except KeyError:
@@ -124,9 +124,9 @@ def detect_game_finish(game_id: int | str):
 
 # route(/delete_game/<game_id>)
 def delete_game(game_id: int | str):
+    games_lock.acquire()
     try:
         game_id = int(game_id)
-        games_lock.acquire()
         del games[game_id]
         return jsonify(True), 201
     except KeyError:
@@ -139,9 +139,9 @@ def delete_game(game_id: int | str):
 
 # route(/submit_game/<game_id>/<player_name>)
 def submit_game(game_id: int | str, player_name: str):
+    games_lock.acquire()
     try:
         game_id = int(game_id)
-        games_lock.acquire()
         game = games[game_id]
         return game.submit_score(player_name)
     except KeyError:
