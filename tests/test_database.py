@@ -210,7 +210,8 @@ def test_check_player(client, app):
 
 
 def test_init_tables(client, app):
-    """Test the /init_tables endpoint to ensure tables are created if not existing."""
+    """Test the /init_tables endpoint
+    to ensure tables are created if not existing."""
     response = client.post("/init_tables")
     assert response.status_code in (200, 500)
     # If successful, check response structure
