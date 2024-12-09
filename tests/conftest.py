@@ -1,7 +1,5 @@
 import pytest
-
 import os
-
 from apis import register_apis
 from app_logic.init_app import create_app
 from app_logic.database import db
@@ -16,26 +14,38 @@ def app():
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": os.getenv("TEST_TARGET_DB_URL"),
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            # Add a secret key for sessions
+            "SECRET_KEY": "some_random_secret_key_for_testing",
         }
     )
     register_apis(app, __name__)
+    yield app
+
+
+@pytest.fixture(scope="function", autouse=True)
+def clean_db(app):
+    """
+    Before each test function, drop all tables and create them again
+    to ensure a clean database state.
+    """
     with app.app_context():
-        yield app
+        db.drop_all()
+        db.create_all()
+    yield
 
 
 @pytest.fixture(scope="function", autouse=True)
 def rollback_session(app):
     """
-    Ensure each test runs in a rolled-back transaction.
-    This keeps the database state unchanged after the test.
+    Start a transaction for each test and rollback after the test ends.
     """
     with app.app_context():
-        connection = db.engine.connect()  # Connect to the database
-        transaction = connection.begin()  # Begin a transaction
-        db.session.bind = connection  # Bind the session to the transaction
-        yield  # Run the test
-        transaction.rollback()  # Rollback all changes made during the test
-        connection.close()  # Close the database connection
+        connection = db.engine.connect()
+        transaction = connection.begin()
+        db.session.bind = connection
+        yield
+        transaction.rollback()
+        connection.close()
 
 
 @pytest.fixture(scope="module")

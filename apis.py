@@ -4,6 +4,10 @@ from app_logic.database_routes import (
     fetch_leaderboard,
     submit_score,
     check_player,
+    init_tables,
+    register,
+    login,
+    logout,
 )
 from app_logic.game_routes import (
     create_game,
@@ -30,6 +34,10 @@ database_apis = {
     "/fetch_leaderboard": (fetch_leaderboard, ["GET"]),
     "/submit_score": (submit_score, ["POST"]),
     "/check_player": (check_player, ["GET"]),
+    "/init_tables": (init_tables, ["POST"]),
+    "/register": (register, ["POST"]),
+    "/login": (login, ["POST"]),
+    "/logout": (logout, ["POST"]),
 }
 
 fetch_image_apis = {
