@@ -1,0 +1,63 @@
+name: Develop Branch CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+  TEST_FLASK_DB_URL: ${{ secrets.TEST_FLASK_DB_URL }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      python-version: 3.12
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Unit Tests
+        env:
+          TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+          TEST_FLASK_DB_URL: ${{ secrets.TEST_FLASK_DB_URL }}
+        run: python -m pytest
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Deploy to Impaas
+        uses: /impaas/impaas-deploy@v3
+        with:
+          app-name: cs824-sse-app
+          deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+          method: PLATFORM

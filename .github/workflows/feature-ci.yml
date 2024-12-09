@@ -1,0 +1,100 @@
+name: Feature Branch CI
+
+on:
+  push:
+    branches:
+      - feature/zs524_*
+      - feature/xl3924_*
+      - feature/cs824_*
+      - feature/tt3024_*
+
+env:
+  TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+  TEST_FLASK_DB_URL: ${{ secrets.TEST_FLASK_DB_URL }}
+
+jobs:
+  python-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8
+        run: flake8 .
+
+  branch-detection:
+    needs: python-formatting
+    runs-on: ubuntu-latest
+    outputs:
+      detected-branch: ${{ steps.detect-branch.outputs.branch-name }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Identify Branch
+        id: detect-branch
+        run: |
+          echo "Running CI for branch ${{ github.ref }}"
+          if [[ ${{ github.ref }} == refs/heads/feature/zs524_* ]]; then
+            echo "Detected branch: Ziheng Shan"
+            echo "::set-output name=branch-name::Ziheng Shan"
+          elif [[ ${{ github.ref }} == refs/heads/feature/xl3924_* ]]; then
+            echo "Detected branch: Tiffany Liu"
+            echo "::set-output name=branch-name::Tiffany Liu"
+          elif [[ ${{ github.ref }} == refs/heads/feature/cs824_* ]]; then
+            echo "Detected branch: Chujia Song"
+            echo "::set-output name=branch-name::Chujia Song"
+          elif [[ ${{ github.ref }} == refs/heads/feature/tt3024_* ]]; then
+            echo "Detected branch: Wenqing Tu"
+            echo "::set-output name=branch-name::Wenqing Tu"
+          else
+            echo "Unknown branch"
+            exit 1
+          fi
+
+  setup:
+    needs: branch-detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Unit Tests
+        env:
+          TEST_TARGET_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+          TEST_FLASK_DB_URL: ${{ secrets.TEST_TARGET_DB_URL }}
+        run: |
+          python -m pytest
