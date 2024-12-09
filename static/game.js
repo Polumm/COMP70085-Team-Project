@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitScoreBtn = document.getElementById("submit-score");
   const returnHomeBtn = document.getElementById("return-home");
 
-
   // Submit score button event listener
   submitScoreBtn.addEventListener("click", async () => {
     await submitGame();
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   window.startGame = async function() {
-
     try {
       // Fix the number of card pairs to 10 (20 cards total)
       const numPairs = 10;
@@ -145,9 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (boardIsLocked) return; // Prevent flipping when game is over
 
-    moves++; // Increment the number of card flips
-    updateMoveCounter(moves); // Update the card flip counter display
-
     // Call API to check if cards match
     try {
       const cardIndex = cardElement.dataset.index;
@@ -160,6 +155,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (secretIndex == -1) {
         return;
       } else {
+        moves++; // Increment the number of card flips
+        updateMoveCounter(moves); // Update the card flip counter display
         if (currentlyRevealedSecretIndex == null) {
           currentlyRevealedSecretIndex = secretIndex;
           currentlyRevealedCard = cardElement;
@@ -306,7 +303,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Check for duplicate usernames via the API
       try {
-        const response = await fetch(`/check_player?player_name=${encodeURIComponent(username)}`);
+        const response = await fetch(
+          `/check_player?player_name=${encodeURIComponent(username)}`,
+        );
         if (!response.ok) {
           throw new Error("Failed to check username availability.");
         }
@@ -318,7 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } catch (error) {
         console.error("Error checking username:", error);
-        alert("The username is already taken on the leaderboard.\nPlease try a different one!");
+        alert(
+          "The username is already taken on the leaderboard.\nPlease try a different one!",
+        );
         return;
       }
 
@@ -331,5 +332,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
       playerName = username;
     });
-
 });
