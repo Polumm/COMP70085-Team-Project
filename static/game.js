@@ -46,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const numPairs = 10;
       const totalCards = numPairs * 2;
 
+      // hide the pop up window
+      const gameOverPopup = document.getElementById("game-over-popup");
+      gameOverPopup.classList.add("hidden");
+
       // Call API to create a new game
       let url = null;
       if (gameId != null) {
@@ -61,10 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const newGameId = await response.json();
       gameId = newGameId;
-
-      // hide the pop up window
-      const gameOverPopup = document.getElementById("game-over-popup");
-      gameOverPopup.classList.add("hidden");
 
       // Restart timer
       startTime = Date.now();
