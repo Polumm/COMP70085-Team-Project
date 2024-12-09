@@ -42,8 +42,6 @@ class Game:
             self._start_time = time()
         self._time = time() - self._start_time
 
-        self._flip_count += 1
-
         target_card = self._cards[target]
 
         # you can't flip a non-existent card
@@ -53,6 +51,8 @@ class Game:
         # you can't flip a revealed card
         if target_card.is_revealed():
             return -1
+
+        self._flip_count += 1
 
         if self._revealed_card_index is not None:
             # currently there is a revealed card
