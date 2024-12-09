@@ -150,12 +150,18 @@ games_lock = threading.Lock()
 def clear_game():
     while True:
         sleep(60)
+        print("Trying to acquire daemon lock")
         games_lock.acquire()
-        game_ids = tuple(games.keys())
-        for game_id in game_ids:
-            if game_id in games and games[game_id].can_destroy():
-                del games[game_id]
-        games_lock.release()
+        print("Daemon lock acquired")
+        try:
+            game_ids = tuple(games.keys())
+            for game_id in game_ids:
+                if game_id in games and games[game_id].can_destroy():
+                    del games[game_id]
+        finally:
+            print("Trying to release the daemon lock")
+            games_lock.release()
+            print("Daemon lock released")
 
 
 threading.Thread(target=clear_game, daemon=True).start()
