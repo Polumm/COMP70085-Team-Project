@@ -28,6 +28,8 @@ def create_game(num_pairs: int | str):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Failed to create game: {str(e)}"}), 500
+    finally:
+        games_lock.release()
 
 
 # route("/create_default_game", methods=["POST"])
@@ -59,6 +61,8 @@ def flip(game_id: int | str, card_index: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id or the card id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route("/get_time/<game_id>")
@@ -72,6 +76,8 @@ def get_time(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route("/get_flip_count/<game_id>")
@@ -85,6 +91,8 @@ def get_flip_count(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route("/reset_game/<game_id>")
@@ -100,6 +108,8 @@ def reset_game(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route("/detect_game_finish/<game_id>")
@@ -114,6 +124,8 @@ def detect_game_finish(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route(/delete_game/<game_id>)
@@ -128,6 +140,8 @@ def delete_game(game_id: int | str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
 
 
 # route(/submit_game/<game_id>/<player_name>)
@@ -142,3 +156,5 @@ def submit_game(game_id: int | str, player_name: str):
         return jsonify({"error": "The game doesn't exist"}), 400
     except ValueError:
         return jsonify({"error": "The game id is invalid"}), 400
+    finally:
+        games_lock.release()
