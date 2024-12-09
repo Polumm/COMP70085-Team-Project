@@ -34,7 +34,8 @@ def fetch_leaderboard():
 def submit_score():
     """
     Submit a player's score.
-    Accepts player data (name, completion time, and number of moves) as JSON input.
+    Accepts player data
+    (name, completion time, and number of moves) as JSON input.
 
     Request Body:
         {
@@ -135,7 +136,8 @@ def check_player_existence(player_name):
 def init_tables():
     """
     Check if 'player_scores' and 'users' tables exist in the database.
-    If they do not exist, create them using SQL statements from sql_queries.ini.
+    If they do not exist,
+    create them using SQL statements from sql_queries.ini.
     This can be called at the start of the game to ensure tables are created.
     """
     queries = load_sql_queries("sql_queries.ini")
@@ -148,25 +150,15 @@ def init_tables():
     try:
         conn, cur = init_db_connection(db_url)
 
-        # Check 'player_scores' table
-        cur.execute("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'player_scores'
-            );
-        """)
+        # Check 'player_scores' table existence
+        cur.execute(queries.get("table_existence", "check_player_scores"))
         player_scores_exists = cur.fetchone()[0]
 
-        # Check 'users' table
-        cur.execute("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'users'
-            );
-        """)
+        # Check 'users' table existence
+        cur.execute(queries.get("table_existence", "check_users"))
         users_exists = cur.fetchone()[0]
 
-        # Create 'player_scores' if not exists
+        # Create 'player_scores' table if it does not exist
         if not player_scores_exists:
             create_player_scores_sql = queries.get(
                 "table_creation", "create_player_scores"
@@ -174,7 +166,7 @@ def init_tables():
             cur.execute(create_player_scores_sql)
             conn.commit()
 
-        # Create 'users' if not exists
+        # Create 'users' table if it does not exist
         if not users_exists:
             create_users_sql = queries.get("table_creation", "create_users")
             cur.execute(create_users_sql)
