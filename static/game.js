@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let playerName = null;
 
+  let gameStarted = false;
+
   // Show the game over popup
   const gameOverPopup = document.getElementById("game-over-popup");
   const leaderboardBtn = document.getElementById("leaderboard");
@@ -93,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const cols = 5;
       let cardIndex = 0;
 
+      gameBoard.innerHTML = "";
       for (let row = 0; row < rows; row++) {
         const rowElement = document.createElement("div");
         rowElement.classList.add("row");
@@ -216,6 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
     timerInterval = null;
     gameBoard.innerHTML = "";
     gameSubmitted = false;
+
+    gameStarted = false;
   }
 
   async function detectGameFinish() {
@@ -243,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function submitGame() {
     if (gameSubmitted) {
-      // alert("You have already submitted your game!");
+      alert("You have already submitted this game!");
       return;
     }
 
