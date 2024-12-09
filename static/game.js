@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let playerName = null;
 
-  let gameStarted = false;
+  let timerStarted = false;
 
   // Show the game over popup
   const gameOverPopup = document.getElementById("game-over-popup");
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "/leaderboard";
   });
 
-  window.startGame = async function () {
+  window.startGame = async function() {
 
     try {
       // Fix the number of card pairs to 10 (20 cards total)
@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       updateMoveCounter(0);
       updateTimer(0);
 
-      // Start the timer for the game
       if (timerInterval) {
         clearInterval(timerInterval); // Prevent existing timer from repeating
       }
@@ -119,12 +118,31 @@ document.addEventListener("DOMContentLoaded", () => {
       // Set the timer and move counter to be visible
       document.getElementById("timer").style.opacity = 1;
       document.getElementById("move-counter").style.opacity = 1;
+
+      if (timerInterval) {
+        clearInterval(timerInterval); // Prevent existing timer from repeating
+      }
     } catch (error) {
       console.error("Error starting the game:", error);
     }
   };
 
   async function flipCard(cardElement) {
+    if (!timerStarted) {
+      // Restart timer
+      startTime = Date.now();
+      updateMoveCounter(0);
+      updateTimer(0);
+      // Start the timer for the game
+      if (timerInterval) {
+        clearInterval(timerInterval); // Prevent existing timer from repeating
+      }
+      timerInterval = setInterval(() => {
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        updateTimer(elapsedTime);
+      }, 1000); // Update timer every second
+      timerStarted = true;
+    }
     if (boardIsLocked) return; // Prevent flipping when game is over
 
     moves++; // Increment the number of card flips
@@ -220,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gameBoard.innerHTML = "";
     gameSubmitted = false;
 
-    gameStarted = false;
+    timerStarted = false;
   }
 
   async function detectGameFinish() {
@@ -276,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("enter-name-btn")
-    .addEventListener("click", async function () {
+    .addEventListener("click", async function() {
       const usernameInput = document.getElementById("username");
       const username = usernameInput.value.trim();
 
